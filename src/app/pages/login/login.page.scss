@@ -1,0 +1,33 @@
+.page-wrapper {
+    height: 90vh;  // Full height of the viewport
+    display: flex;
+    justify-content: center;  // Center horizontally
+    align-items: center;  // Center vertically
+  }
+  
+  ion-grid {
+    width: 100%;  // Ensure the grid takes full width for proper column alignment
+  }
+
+  ion-thumbnail {
+    --size: 140px;
+    --border-radius: 14px;
+  }
+
+  .logo {
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-content: center;
+  }
+
+  .logo-img {
+    object-fit: contain;
+    height: auto;
+    width: 90%;
+  }
+
+
+
+  
+  

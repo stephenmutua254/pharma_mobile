@@ -1,0 +1,9 @@
+<ion-toast
+    [position]="position"
+    [icon]="icon"
+    [color]="color"
+    [isOpen]="isOpen"
+    [message]="message"
+    [duration]="duration"
+    (didDismiss)="toastSrv.clearToast()"
+  ></ion-toast>

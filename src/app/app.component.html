@@ -1,0 +1,124 @@
+<ion-app>
+  <ion-menu contentId="main-content" menuId="m1">
+    <ion-header>
+      <ion-toolbar>
+        <ion-menu-toggle>
+          <img src="assets/icon/pharma.webp"
+              style="height: 30px; margin: 5px 2px 2px 16px;"
+              (click)="navigateTo('/home')">
+          <ion-title
+            style="display: inline-block; vertical-align: super; font-size: 17px;">
+            PharmaPrime
+          </ion-title>
+        </ion-menu-toggle>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-no-padding">
+      <ion-list class="ion-no-padding">
+
+        <ion-menu-toggle>
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/dashboard')">
+            <ion-icon name="home" slot="start"></ion-icon>
+            <ion-label>Home</ion-label>
+          </ion-item>
+
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/stock')">
+            <ion-icon name="list" slot="start"></ion-icon>
+            <ion-label>Manage stock</ion-label>
+          </ion-item>
+
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/suppliers')">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            <ion-label>Suppliers</ion-label>
+          </ion-item>
+
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/sell')">
+            <ion-icon name="wallet-outline" slot="start"></ion-icon>
+            <ion-label>Sell</ion-label>
+          </ion-item>
+
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/sell')">
+            <ion-icon name="arrow-undo-outline" slot="start"></ion-icon>
+            <!-- <ion-icon name="home"></ion-icon> -->
+            <ion-label>Reverse</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        
+        <ion-accordion-group>
+          <ion-accordion>
+            <ion-item slot="header" detail="false">
+              <ion-icon name="add" slot="start"></ion-icon>
+              <ion-label>Inventory</ion-label>
+            </ion-item>
+            <div slot="content">
+              <ion-menu-toggle auto-hide="false">
+                <ion-item lines="none"
+                          button
+                          (click)="navigateTo('/add-supplier-stock')">
+                  <ion-icon name="" slot="start"></ion-icon>
+                  <ion-label>Supplier</ion-label>
+                </ion-item>
+                <ion-item lines="none"
+                          button
+                          (click)="navigateTo('/add-positive')">
+                  <ion-icon name="" slot="start"></ion-icon>
+                  <ion-label>Stock +ve</ion-label>
+                </ion-item>
+                <ion-item lines="none"
+                          button
+                          (click)="navigateTo('/add-negative')">
+                  <ion-icon name="" slot="start"></ion-icon>
+                  <ion-label>Stock -ve</ion-label>
+                </ion-item>
+              </ion-menu-toggle>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+
+        <ion-menu-toggle>
+          <ion-item lines="none"
+                    button
+                    (click)="navigateTo('/reports')">
+            <ion-icon name="bar-chart-outline" slot="start"></ion-icon>
+            <ion-label>Reports</ion-label>
+          </ion-item>
+          <ion-item lines="none"
+                    button
+                    (click)="logOut()">
+            <ion-icon name="exit" slot="start"></ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <!-- <ng-container *ngIf="loaded$ | async"> -->
+      <div *ngIf="loaded$ | async" [@enter]="getPage(outlet)">
+        <ion-router-outlet main #outlet id="main-content"></ion-router-outlet>
+      </div>
+    <!-- </ng-container> -->
+
+    
+  </ion-content>
+
+  <app-loading></app-loading>
+  <app-toast></app-toast>
+  
+</ion-app>

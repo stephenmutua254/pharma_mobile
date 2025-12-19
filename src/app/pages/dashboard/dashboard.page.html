@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-grid>
+    <ion-row class="ion-no-padding ion-no-margin">
+      <ion-col size="12">
+        <div *ngIf="loaded">
+          <apx-chart
+            [series]="loaded ? chartSeries : []"
+            [chart]="chartDetails"
+            [xaxis]="loaded ? chartXAxis : {categories: []}"
+            [yaxis]="chartYAxis"
+            [dataLabels]="chartDataLabels"
+            [title]="chartTitle"
+            [plotOptions]="options"
+            [tooltip]="tooltip">
+          </apx-chart>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
