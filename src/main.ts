@@ -5,7 +5,7 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { addIcons } from 'ionicons';
-import { home, list, add, barChartOutline,
+import { home, list, add, barChartOutline, chevronForwardOutline,
           exit, menu, settings, documentTextOutline,
           arrowUndoOutline, walletOutline } from 'ionicons/icons';
 
@@ -14,7 +14,7 @@ import { provideHttpClient } from '@angular/common/http';
 
 // 2. Register the icons globally before bootstrapping the app
 addIcons({ home, list, add, documentTextOutline,
-          arrowUndoOutline, barChartOutline,
+          arrowUndoOutline, barChartOutline, chevronForwardOutline,
           exit, menu, settings, walletOutline });
 
 bootstrapApplication(AppComponent, {

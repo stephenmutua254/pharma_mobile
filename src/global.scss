@@ -66,3 +66,7 @@ button.alert-button.alert-reject {
     text-overflow: ellipsis;
     white-space: normal; /* Allows wrapping */
 }
+
+.animate-flicker {
+    animation: fadeIn 1s infinite alternate;
+}

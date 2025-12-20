@@ -30,11 +30,30 @@ export class ApiService {
               private toastSrv: ToastService
   ) {}
 
-  async login(data: any): Promise<any> {
+  async read(data: any): Promise<any> {
     try {
       
       data.mac = this.cryptoSrv.encryptText('mobile');
+      data.at = this.authSrv.getUserToken('access_token');
+      data.atu = this.authSrv.getUserToken('uid');
+        
       const request = this.httpSrv.post(this.readApi, data, this.httpOptions);
+
+      // convert the request to a promise
+      return await firstValueFrom(request);
+
+    } catch (error) {
+      this.handleError;
+    }
+  }
+
+  async post(data: any): Promise<any> {
+    try {
+      
+      data.mac = this.cryptoSrv.encryptText('mobile');
+      data.at = this.authSrv.getUserToken('access_token');
+      data.atu = this.authSrv.getUserToken('uid');
+      const request = this.httpSrv.post(this.postApi, data, this.httpOptions);
 
       // convert the request to a promise
       return await firstValueFrom(request);

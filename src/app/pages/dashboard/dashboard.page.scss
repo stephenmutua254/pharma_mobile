@@ -1,0 +1,4 @@
+ion-skeleton-text {
+  /* Use the primary color with low opacity so the "shimmer" is visible */
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
+}

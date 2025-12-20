@@ -28,5 +28,21 @@ export class AuthService {
 
     localStorage.setItem('ut', tokenString);
   }
+
+  getUserToken(token: any) {
+    const userToken = localStorage.getItem('ut');
+
+    if(userToken) {
+      const user = JSON.parse(userToken);
+
+      if(user[token]) {
+        return user[token]
+      } else {
+        return '';
+      }
+    } else {
+      return '';
+    }
+  }
   
 }

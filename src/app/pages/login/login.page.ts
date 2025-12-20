@@ -38,7 +38,7 @@ export class LoginPage implements OnInit {
       password: this.cryptoSrv.encryptText(loginForm.value.password)
     }
 
-    this.apiSrv.login(request).then(async (resp) => {
+    this.apiSrv.read(request).then(async (resp) => {
       if(await this.apiSrv.checkResponseStatus(resp)) {
         this.loadCtrl.closeLoad();
         this.toastSrv.showSuccessToast('Login successfull');

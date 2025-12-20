@@ -10,22 +10,149 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-grid>
+
+  <ion-grid *ngIf="!loaded"
+            class="ion-padding">
+    <ion-row>
+      <ion-col size="12" class="ion-margin-bottom">
+        <ion-thumbnail style="width: 100%; height: 250px;">
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-thumbnail style="width: 100%;">
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-thumbnail style="width: 100%;">
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-thumbnail style="width: 100%;">
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-thumbnail style="width: 100%; height: 200px;">
+          <ion-skeleton-text [animated]="true"></ion-skeleton-text>
+        </ion-thumbnail>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="loaded">
     <ion-row class="ion-no-padding ion-no-margin">
       <ion-col size="12">
-        <div *ngIf="loaded">
+        <ion-card mode="ios" class="ion-no-margin">
+          <ion-card-header class="ion-no-padding ion-padding-start ion-padding-top">
+            <ion-card-subtitle
+              style="text-transform: none;"
+                class="ion-display-flex ion-justify-content-between">
+                Weekly sales & profit
+            </ion-card-subtitle>
+          </ion-card-header>
           <apx-chart
             [series]="loaded ? chartSeries : []"
             [chart]="chartDetails"
             [xaxis]="loaded ? chartXAxis : {categories: []}"
             [yaxis]="chartYAxis"
             [dataLabels]="chartDataLabels"
-            [title]="chartTitle"
             [plotOptions]="options"
-            [tooltip]="tooltip">
+            [tooltip]="tooltip"
+            [stroke]="stroke"
+            [legend]="legend">
           </apx-chart>
-        </div>
+        </ion-card>
       </ion-col>
+
+      <ion-col size="12">
+        <ion-card mode="ios" class="ion-no-margin ion-margin-vertical">
+          <ion-card-header>
+            <ion-card-subtitle
+              color="warning"
+              style="text-transform: none;"
+              class="ion-display-flex ion-justify-content-between ion-align-items-center">
+              Near Expiry
+
+              <div class="ion-display-flex ion-align-items-center">
+                <ion-badge
+                  color="warning"
+                  [class]="near_expiry > 0 ? 'ion-margin-end animate-flicker' : 'ion-margin-end'">
+                  {{near_expiry | number}}
+                </ion-badge>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </div>
+            </ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+
+        <ion-card mode="ios" class="ion-no-margin ion-margin-vertical">
+          <ion-card-header>
+            <ion-card-subtitle
+              color="primary"
+              style="text-transform: none;"
+              class="ion-display-flex ion-justify-content-between ion-align-items-center">
+              Price Change
+              <div class="ion-display-flex ion-align-items-center">
+                <ion-badge
+                  color="primary"
+                  [class]="price_change > 0 ? 'ion-margin-end animate-flicker' : 'ion-margin-end'">
+                  {{price_change | number}}
+                </ion-badge>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </div>
+            </ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+
+        <ion-card mode="ios" class="ion-no-margin ion-margin-vertical">
+          <ion-card-header>
+            <ion-card-subtitle
+              color="danger"
+              style="text-transform: none;"
+              class="ion-display-flex ion-justify-content-between">
+              Low Stock
+              <div class="ion-display-flex ion-align-items-center animate-flicker">
+                <ion-badge
+                  color="danger"
+                  [class]="low_stock > 0 ? 'ion-margin-end animate-flicker' : 'ion-margin-end'">
+                  {{low_stock | number}}
+                </ion-badge>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </div>
+            </ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+
+        <ion-card mode="ios" class="ion-no-margin ion-margin-vertical">
+          <ion-card-header>
+            <ion-card-subtitle
+              color="secondary"
+              style="text-transform: none;"
+              class="ion-display-flex ion-justify-content-between ion-align-items-center">
+              Idle Stock
+              <div class="ion-display-flex ion-align-items-center animate-flicker">
+                <ion-badge
+                  color="secondary"
+                  [class]="dead_stock > 0 ? 'ion-margin-end animate-flicker' : 'ion-margin-end'">
+                  {{dead_stock | number}}
+                </ion-badge>
+                <!-- <ion-badge color="secondary" class="ion-margin-end">{{dead_stock | number}}</ion-badge> -->
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+              </div>
+            </ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+
+      </ion-col>
+
     </ion-row>
   </ion-grid>
 </ion-content>
