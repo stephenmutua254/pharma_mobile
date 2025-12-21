@@ -37,7 +37,8 @@
               role="article"
               detail="true"
               [button]="true"
-              (click)="selectItem(item)">
+              (click)="selectItem(item)"
+              @enter>
       <ion-label>
         <ion-text class="truncate">{{ item.name | titlecase}}</ion-text>
         <sub>{{ item.formulation | titlecase }} ({{item.pack_size_1 | titlecase}})</sub>

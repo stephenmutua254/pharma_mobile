@@ -8,13 +8,20 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { InfiniteScrollCustomEvent } from '@ionic/angular/standalone';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-sell',
   templateUrl: './sell.page.html',
   styleUrls: ['./sell.page.scss'],
   standalone: true,
-  imports: [SharedModules]
+  imports: [SharedModules],
+  animations: [trigger('enter', [
+    transition('* => *', [
+      style({ opacity: 0 }),
+      animate('1s', style({ opacity: 1 }))
+    ])
+  ])]
 })
 export class SellPage implements OnInit {
   @ViewChild('searchbar', { static: true }) searchbar: IonSearchbar = {} as IonSearchbar;
@@ -69,11 +76,13 @@ export class SellPage implements OnInit {
     }
   }
 
-  ionViewDidEnter() {
-
+  ionViewWillEnter() {
     this.loaded = false;
     this.filteredStock = [];
     this.stockBatches = [];
+  }
+
+  ionViewDidEnter() {
 
     const request = {
       action: this.cryptoSrv.encryptText('get-stock-and-cart-items-new'),

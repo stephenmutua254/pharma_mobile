@@ -21,7 +21,8 @@ import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { DatePipe } from '@angular/common';
 import { MenuController } from '@ionic/angular';
-import ApexCharts from 'apexcharts';
+import { trigger, transition, style, animate } from '@angular/animations';
+
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +30,13 @@ import ApexCharts from 'apexcharts';
   styleUrls: ['./dashboard.page.scss'],
   standalone: true,
   imports: [SharedModules, NgApexchartsModule],
-  providers: [DatePipe]
+  providers: [DatePipe],
+  animations: [trigger('enter', [
+    transition('* => *', [
+      style({ opacity: 0 }),
+      animate('1s', style({ opacity: 1 }))
+    ])
+  ])]
 })
 export class DashboardPage implements OnInit {
   @ViewChild("chart", { static: false }) chart!: ChartComponent;
