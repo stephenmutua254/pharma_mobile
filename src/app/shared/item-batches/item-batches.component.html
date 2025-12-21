@@ -1,0 +1,55 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title>{{selectedItem.name | titlecase}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" color="danger" (click)="close()">
+        Close
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content mode="md">
+  <ion-list mode="md">
+    <ion-item *ngFor="let item of selectedItem.batches; let index"
+              role="article"
+              detail="true"
+              [button]="true"
+              (click)="selectBatch(item)"
+              @enter>
+      <ion-label>
+        <ion-text class="truncate">Exp: {{item.expiry_date | date}}</ion-text>
+        <p style="margin-top: 12px;">
+          <ion-text color="primary">
+            <small style="font-size: 12px;">
+              <span *ngIf="item.full_pack>0">Full pack: {{item.full_pack | number}}</span>
+              <span *ngIf="item.piece>0">{{item.full_pack>0 ? ', ' : ''}}Piece: {{item.piece | number}}</span>
+            </small>
+          </ion-text>
+        </p>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-text>
+          <sub>@ {{selectedItem.recom_price | number}}</sub>
+        </ion-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+
+
+  <ion-modal #batchModal
+            initialBreakpoint="0.60"
+            [breakpoints]="[0, 0.60]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block">
+        <app-batch-form [selectedBatch]="selectedBatch"
+                        (status)="batchStatus($event)">
+        </app-batch-form>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+
+</ion-content>

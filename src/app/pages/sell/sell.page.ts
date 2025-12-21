@@ -1,21 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { SharedModules } from 'src/app/shared/shared.module';
-import { IonSearchbar } from '@ionic/angular/standalone';
+import { IonSearchbar, InfiniteScrollCustomEvent, IonModal } from '@ionic/angular/standalone';
 import { debounceTime, fromEvent, map } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
-import { InfiniteScrollCustomEvent } from '@ionic/angular/standalone';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { ItemBatchesComponent } from '../../shared/item-batches/item-batches.component';
 
 @Component({
   selector: 'app-sell',
   templateUrl: './sell.page.html',
   styleUrls: ['./sell.page.scss'],
   standalone: true,
-  imports: [SharedModules],
+  imports: [SharedModules,ItemBatchesComponent],
   animations: [trigger('enter', [
     transition('* => *', [
       style({ opacity: 0 }),
@@ -25,13 +25,14 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 export class SellPage implements OnInit {
   @ViewChild('searchbar', { static: true }) searchbar: IonSearchbar = {} as IonSearchbar;
-  
+  @ViewChild('batchModal') batchModal: IonModal = {} as IonModal;
+
   allStock: any[] = [];
   stock: any[] = [];
   stockBatches: any[] = [];
   filteredStock: any[] = [];
 
-  cartItems = [];
+  cartItems: any[] = [];
   waitingCustomers = [];
   nearExpiryItemsTotal = [];
   idle_stock_total = [];
@@ -39,6 +40,10 @@ export class SellPage implements OnInit {
   sellUnitType = '';
 
   loaded = false;
+
+  selectedItem: any = {};
+
+  loaderToShow = '';
 
   constructor(private apiSrv: ApiService,
               private authSrv: AuthService,
@@ -62,6 +67,7 @@ export class SellPage implements OnInit {
   }
 
   filterList(searchQuery: string | undefined) {
+    console.log(searchQuery)
     if (!searchQuery || searchQuery.trim() === '') {
       this.filteredStock = this.stockBatches.slice(0, 30); // Display an initial chunk instead of the entire list
     } else {
@@ -150,8 +156,6 @@ export class SellPage implements OnInit {
         // this.filteredStock = [...this.stockBatches];
         this.generateProducts();
 
-        
-
       }
 
     }).catch(error => {
@@ -178,8 +182,89 @@ export class SellPage implements OnInit {
     }, 500);
   }
 
-  selectItem(item: any) {
+  selectItem(product: any) {
 
+    this.loaderToShow = product.id;
+
+    const request = {
+      action: this.cryptoSrv.encryptText('check-lock-status-fast'),
+      item_id: product.id,
+      location_id: product.location_id,
+      right: this.cryptoSrv.encryptText("sell_cash"),
+      uid: this.authSrv.getUserToken('uid')
+    }
+
+    this.apiSrv.read(request).then(async (resp) => {
+      if(await this.apiSrv.checkResponseStatus(resp)) {
+
+        product.batches = resp.batches;
+
+        product.batches.forEach((element: any) => {
+
+          element.full_pack = 0;
+          element.piece = 0;
+
+          let full_pack=0;
+          let piece=0;
+
+          if(this.sellUnitType==='Piece') {
+            
+            element.full_pack = full_pack;
+            element.piece = piece;
+
+            // check if item is in cart
+            let item = this.cartItems.find(x => x.batch_no === element.batch_no && x.item.id === product.id && x.sl_id==element.s_l_id);
+
+            if(item) {
+              element.qty =  parseInt(element.qty.toString()) - (parseInt(item.qty.toString()) * item.unit.unit_quantity);
+            }
+
+            piece = parseInt(element.qty);
+
+          } else {
+
+            // check if item is in cart
+            let item = this.cartItems.find(x => x.batch_no === element.batch_no && x.item.id === product.id && x.sl_id==element.s_l_id);
+
+            if(item) {
+              element.qty =  parseInt(element.qty.toString()) - (parseInt(item.qty.toString()) * item.unit.unit_quantity);
+            }
+
+            if(parseInt(product.pack_size)===1) {
+              // piece = parseInt(element.qty);
+              if(element.sell_unit==='Fullpack') {
+                full_pack = parseInt(element.qty);
+              } else {
+                piece = parseInt(element.qty);
+              }
+            } else {
+              full_pack = Math.floor(parseInt(element.qty)/parseInt(product.pack_size));
+              piece = parseInt(element.qty) - (full_pack * parseInt(product.pack_size));
+            }
+
+            
+            element.full_pack = full_pack;
+            element.piece = piece;
+          }
+        });
+
+        this.selectedItem = JSON.parse(JSON.stringify(product));
+        
+        this.loaderToShow = '';
+
+        await this.batchModal.present();
+
+        
+
+      }
+    }).catch(error => {
+      this.toast.showErrorToast(error);
+    });
+
+  }
+
+  batchStatus($event: any) {
+    this.batchModal.dismiss();
   }
 
 }

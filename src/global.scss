@@ -53,6 +53,11 @@ button.alert-button.alert-reject {
     from { opacity: 0; } 
 }
 
+
+sub {
+    bottom: 0;
+}
+
 .animate-flicker {
     animation: fadeIn 1s infinite alternate;
 }
@@ -115,6 +120,46 @@ ion-content {
   /* A soft gradient makes the glass blur look much more expensive */
   --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
+
+
+.block {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.modal-block {
+    height: 90vh;
+
+    app-item-batches {
+        display: contents;
+    }
+
+    app-batch-form {
+        display: contents;
+    }
+}
+
+
+.loader {
+    width: 30px;
+    aspect-ratio: 2;
+    --_g: no-repeat radial-gradient(circle closest-side,#02926e 90%,#ffffff);
+    background: 
+      var(--_g) 0%   50%,
+      var(--_g) 50%  50%,
+      var(--_g) 100% 50%;
+    background-size: calc(100%/3) 50%;
+    animation: l3 1s infinite linear;
+  }
+  @keyframes l3 {
+      20%{background-position:0%   0%, 50%  50%,100%  50%}
+      40%{background-position:0% 100%, 50%   0%,100%  50%}
+      60%{background-position:0%  50%, 50% 100%,100%   0%}
+      80%{background-position:0%  50%, 50%  50%,100% 100%}
+  }
 
 
 

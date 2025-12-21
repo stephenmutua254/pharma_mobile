@@ -35,9 +35,9 @@
   <ion-list *ngIf="filteredStock.length>0 && loaded" mode="md">
     <ion-item *ngFor="let item of filteredStock; let index"
               role="article"
-              detail="true"
+              [detail]="loaderToShow!=item.id ? true : false"
               [button]="true"
-              (click)="selectItem(item)"
+              (click)="loaderToShow=='' ? selectItem(item) :  ''"
               @enter>
       <ion-label>
         <ion-text class="truncate">{{ item.name | titlecase}}</ion-text>
@@ -53,9 +53,10 @@
         </p>
       </ion-label>
       <ion-label slot="end">
-        <ion-text>
+        <ion-text *ngIf="loaderToShow!=item.id">
           <sub>@ {{item.recom_price | number}}</sub>
         </ion-text>
+        <div class="loader" *ngIf="loaderToShow==item.id"></div>
       </ion-label>
     </ion-item>
   </ion-list>
@@ -64,4 +65,19 @@
   *ngIf="allStock.length>0">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
+
+
+  <ion-modal #batchModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block">
+        <app-item-batches [selectedItem]="selectedItem"
+                        (status)="batchStatus($event)">
+        </app-item-batches>
+      </div>
+    </ng-template>
+  </ion-modal>
+
 </ion-content>
