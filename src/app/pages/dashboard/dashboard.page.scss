@@ -2,3 +2,29 @@ ion-skeleton-text {
   /* Use the primary color with low opacity so the "shimmer" is visible */
   --background: rgba(var(--ion-color-primary-rgb), 0.1);
 }
+
+apx-chart {
+  /* This tells the browser: "Let the JavaScript handle the touch gestures" */
+  touch-action: pan-x !important;
+  // display: block;
+}
+
+/* Or target the specific internal area of ApexCharts */
+.apexcharts-canvas {
+  touch-action: pan-x !important;
+}
+
+.chart-container {
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.chart-holder {
+  position: relative;
+  z-index: 10; /* Bring it to the front */
+  width: 100%;
+  display: block;
+}
+
+

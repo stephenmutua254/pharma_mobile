@@ -1,13 +1,66 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar>
-    <ion-title>sell</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar style="padding: 0px 5px 0px 5px; min-height: 1px;"
+    mode="ios"
+    placeholder="Search item ..."
+    #searchbar
+    (ionClear)="filterList('')"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">sell</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-list *ngIf="!loaded">
+    <ion-item *ngFor="let item of [1,1,1,1,1,1,1,1,1,1,1,1,1,11]">
+      <ion-label>
+        <h3>
+          <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
+        </h3>
+        <p>
+          <ion-skeleton-text [animated]="true" style="width: 40%;"></ion-skeleton-text>
+        </p>
+      </ion-label>
+
+      <ion-label slot="end">
+        <p>
+          <ion-skeleton-text [animated]="true" style="width: 200%;"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="filteredStock.length>0 && loaded" mode="md">
+    <ion-item *ngFor="let item of filteredStock; let index"
+              role="article"
+              detail="true"
+              [button]="true"
+              (click)="selectItem(item)">
+      <ion-label>
+        <ion-text class="truncate">{{ item.name | titlecase}}</ion-text>
+        <sub>{{ item.formulation | titlecase }} ({{item.pack_size_1 | titlecase}})</sub>
+        <p style="margin-top: 12px;">
+          
+          <ion-text color="primary">
+            <small style="font-size: 12px;">
+              <span *ngIf="item.full_pack>0">Full pack: {{item.full_pack | number}}</span>
+              <span *ngIf="item.piece>0">{{item.full_pack>0 ? ', ' : ''}}Piece: {{item.piece | number}}</span>
+            </small>
+          </ion-text>
+        </p>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-text>
+          <sub>@ {{item.recom_price | number}}</sub>
+        </ion-text>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)"
+  *ngIf="allStock.length>0">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

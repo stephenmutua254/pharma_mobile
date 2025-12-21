@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -10,7 +10,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-
+  <div class="header-spacer"></div>
   <ion-grid *ngIf="!loaded"
             class="ion-padding">
     <ion-row>
@@ -50,7 +50,9 @@
   <ion-grid *ngIf="loaded">
     <ion-row class="ion-no-padding ion-no-margin">
       <ion-col size="12">
-        <ion-card mode="ios" class="ion-no-margin">
+        <ion-card mode="ios"
+          class="ion-no-margin chart-holder"
+          >
           <ion-card-header class="ion-no-padding ion-padding-start ion-padding-top">
             <ion-card-subtitle
               style="text-transform: none;"
@@ -58,19 +60,22 @@
                 Weekly sales & profit
             </ion-card-subtitle>
           </ion-card-header>
-          <apx-chart
-            [series]="loaded ? chartSeries : []"
+          <apx-chart #chart id="chart"
+            [series]="chartSeries"
             [chart]="chartDetails"
-            [xaxis]="loaded ? chartXAxis : {categories: []}"
+            [xaxis]="chartXAxis"
             [yaxis]="chartYAxis"
             [dataLabels]="chartDataLabels"
             [plotOptions]="options"
             [tooltip]="tooltip"
             [stroke]="stroke"
-            [legend]="legend">
+            [legend]="legend"
+            [grid]="grid">
           </apx-chart>
         </ion-card>
       </ion-col>
+
+      
 
       <ion-col size="12">
         <ion-card mode="ios" class="ion-no-margin ion-margin-vertical">
@@ -151,6 +156,32 @@
           </ion-card-header>
         </ion-card>
 
+      </ion-col>
+
+      <ion-col size="12">
+        <ion-card mode="ios"
+          class="ion-no-margin chart-holder"
+          >
+          <ion-card-header class="ion-no-padding ion-padding-start ion-padding-top">
+            <ion-card-subtitle
+              style="text-transform: none;"
+                class="ion-display-flex ion-justify-content-between">
+                Monthly sales & profit
+            </ion-card-subtitle>
+          </ion-card-header>
+          <apx-chart #chart2 id="chart2"
+            [series]="chartSeries2"
+            [chart]="chartDetails"
+            [xaxis]="chartXAxis2"
+            [yaxis]="chartYAxis"
+            [dataLabels]="chartDataLabels"
+            [plotOptions]="options"
+            [tooltip]="tooltip"
+            [stroke]="stroke"
+            [legend]="legend"
+            [grid]="grid">
+          </apx-chart>
+        </ion-card>
       </ion-col>
 
     </ion-row>

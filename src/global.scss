@@ -65,8 +65,57 @@ button.alert-button.alert-reject {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal; /* Allows wrapping */
+    text-transform: none;
 }
 
 .animate-flicker {
     animation: fadeIn 1s infinite alternate;
 }
+
+
+
+ion-header {
+  /* Position the header container */
+  // padding: calc(var(--ion-safe-area-top) + 12px) 16px 12px 16px;
+  background: transparent;
+
+  ion-toolbar {
+    /* 1. Remove the Hairline (Horizontal Line) */
+    --border-style: none !important;
+    border: none !important;
+    
+    /* 2. Liquid Glass Background */
+    /* Using a very slight tint + saturation boost for that 'Liquid' feel */
+    --background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(25px) saturate(200%) brightness(110%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%) brightness(110%);
+    
+    /* 3. The 'Outer Sheen' Border (Liquid edge) */
+    // border-radius: 0px 0px 20px 20px;
+    border: 0.5px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Force-kill the hidden iOS divider line */
+ion-toolbar::after {
+  display: none !important;
+  height: 0 !important;
+}
+
+ion-toolbar {
+  background: linear-gradient(
+    165deg, 
+    rgba(255,255,255,0.6) 0%, 
+    rgba(255,255,255,0.2) 100%
+  ) !important;
+}
+
+ion-content {
+  /* A soft gradient makes the glass blur look much more expensive */
+  --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+
+
+

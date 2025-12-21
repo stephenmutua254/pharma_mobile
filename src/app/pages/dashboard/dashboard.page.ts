@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SharedModules } from 'src/app/shared/shared.module';
-import { ApexTooltip, ApexYAxis, NgApexchartsModule } from 'ng-apexcharts';
+import { ApexTooltip,
+        ApexYAxis,
+        NgApexchartsModule } from 'ng-apexcharts';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -9,6 +11,7 @@ import {
   ApexTitleSubtitle,
   ApexStroke,
   ApexLegend,
+  ApexGrid,
   ChartComponent,
   ApexPlotOptions
 } from 'ng-apexcharts';
@@ -17,6 +20,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { DatePipe } from '@angular/common';
+import { MenuController } from '@ionic/angular';
+import ApexCharts from 'apexcharts';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,6 +32,8 @@ import { DatePipe } from '@angular/common';
   providers: [DatePipe]
 })
 export class DashboardPage implements OnInit {
+  @ViewChild("chart", { static: false }) chart!: ChartComponent;
+  @ViewChild("chart2", { static: false }) chart2!: ChartComponent;
   
   loaded = false;
 
@@ -34,9 +41,38 @@ export class DashboardPage implements OnInit {
     type: 'bar',
     height: 300,
     toolbar: {
-      show: false // Hide the toolbar with the hamburger buttons
-    }
+      show: false, // Hide the toolbar with the hamburger buttons
+      autoSelected: 'pan',
+      tools: {
+        download: false,
+        selection: false, // Disable selection to force pan
+        zoom: false,      // Disable zoom tool to force pan
+        zoomin: false,
+        zoomout: false,
+        pan: true,        // Explicitly enable the pan tool
+        reset: false
+      }
+    },
+    zoom: {
+      enabled: true,
+      type: 'x',
+    },
   };
+
+  grid: ApexGrid = {
+    show: true, // Keep the grid container
+    yaxis: {
+      lines: {
+        show: false // THIS disables the horizontal lines
+      }
+    },
+    xaxis: {
+      lines: {
+        show: false // This ensures vertical lines are also off (optional)
+      }
+    }
+  }
+
 
   legend: ApexLegend = {
     show: false
@@ -53,13 +89,40 @@ export class DashboardPage implements OnInit {
     }
   ];
 
+  chartSeries2: ApexAxisChartSeries = [
+    {
+      name: 'Sales',
+      data: [],
+      color: ''
+    },{
+      name: 'Gross profit',
+      data: []
+    }
+  ];
+
   chartTitle: ApexTitleSubtitle = {
     text: 'Weekly sales',
     align: 'left'
   };
 
   chartXAxis: ApexXAxis = {
-    categories: []
+    type: 'category',
+    tickPlacement: 'on',
+    categories: [],
+    min: 0, // Start index
+    max: 4,      // End index,
+    range: 4,
+    // tickAmount: 4,
+  };
+
+  chartXAxis2: ApexXAxis = {
+    type: 'category',
+    tickPlacement: 'on',
+    categories: [],
+    min: 0, // Start index
+    max: 5,      // End index,
+    range: 5,
+    // tickAmount: 4,
   };
 
   chartYAxis: ApexYAxis = {
@@ -78,7 +141,7 @@ export class DashboardPage implements OnInit {
       borderRadius: 7,
       borderRadiusApplication: "end",
       borderRadiusWhenStacked: 'last'
-    }
+    },
   };
 
   stroke: ApexStroke = {
@@ -106,6 +169,7 @@ export class DashboardPage implements OnInit {
               private authSrv: AuthService,
               private toast: ToastService,
               private datePipe: DatePipe,
+              private menuCtrl: MenuController,
               private cryptoSrv: CryptoService,) { }
 
   ngOnInit() {
@@ -117,10 +181,14 @@ export class DashboardPage implements OnInit {
 
     this.chartSeries[0].color = primary;
     this.chartSeries[1].color = success;
+
+    this.chartSeries2[0].color = primary;
+    this.chartSeries2[1].color = success;
   }
 
   ionViewWillEnter() {
     this.loaded = false;
+    this.menuCtrl.enable(false);
   }
 
   ionViewDidEnter() {
@@ -128,6 +196,9 @@ export class DashboardPage implements OnInit {
 
     this.chartSeries[0].data = [];
     this.chartSeries[1].data = [];
+
+    this.chartSeries2[0].data = [];
+    this.chartSeries2[1].data = [];
 
     const request = {
       action: this.cryptoSrv.encryptText('get-dashboard-report-mobile'),
@@ -146,13 +217,22 @@ export class DashboardPage implements OnInit {
         this.chartSeries[1].data = resp.weekly_sales.map((e: any) => e.gross_profit);
         this.chartXAxis.categories = resp.weekly_sales.map((e: any) => this.datePipe.transform(e.date_sold, 'MMM dd'));
         
-        // resp.weekly_sales.forEach((element: any) => {
-        //   this.chartSeries[0].data.push(element.gross_sales);
-        //   this.chartSeries[1].data.push(element.gross_profit);
-        //   this.chartXAxis.categories.push(this.datePipe.transform(element.date_sold, 'MMM dd'))
-        // });
 
+        this.chartSeries2[0].data = resp.monthly_sales.map((e: any) => e.gross_sales);
+        this.chartSeries2[1].data = resp.monthly_sales.map((e: any) => e.gross_profit);
+        this.chartXAxis2.categories = resp.monthly_sales.map((e: any) => this.datePipe.transform(e.date_sold, 'LLL yy'));
+        
+        
         this.loaded = true;
+
+        setTimeout(() => {
+          if(this.chart && this.chart2) {
+            // this.chartXAxis.categories = categories;
+            this.chart.zoomX(0, 0);
+            this.chart2.zoomX(0, 0);
+          }
+        }, 200);
+
         
       }
 
