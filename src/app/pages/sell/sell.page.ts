@@ -265,6 +265,10 @@ export class SellPage implements OnInit {
 
   batchStatus($event: any) {
     this.batchModal.dismiss();
+
+    if($event==true) {
+      this.ionViewDidEnter();
+    }
   }
 
 }

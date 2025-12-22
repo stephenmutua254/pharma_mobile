@@ -43,6 +43,9 @@ export class ItemBatchesComponent implements OnInit {
 
   async batchStatus($event: any) {
     await this.batchModal.dismiss();
+    if($event==true) {
+      this.status.emit(true);
+    }
   }
 
 }

@@ -23,22 +23,21 @@
               <ion-col size="6">
                 <ion-item>
                   <ion-checkbox
-                      (ionChange)="unit='Fullpack'"
-                      [checked]="unit==='Fullpack' ? true : false"
-                      justify="start">Fullpack</ion-checkbox>
+                    (ionChange)="unit='Fullpack'; unitSelected('Fullpack')"
+                    [checked]="unit==='Fullpack' ? true : false"
+                    justify="start">Fullpack</ion-checkbox>
                 </ion-item>
               </ion-col>
 
               <ion-col size="6">
                 <ion-item>
                   <ion-checkbox
-                      (ionChange)="unit='Piece'"
-                      [checked]="unit==='Piece' ? true : false"
-                      justify="start">Piece</ion-checkbox>
+                    (ionChange)="unit='Piece'; unitSelected('Piece')"
+                    [checked]="unit==='Piece' ? true : false"
+                    justify="start">Piece</ion-checkbox>
                 </ion-item>
               </ion-col>
             </ion-row>
-
 
             <ion-item>
               <ion-input
@@ -48,7 +47,8 @@
                   label-placement="floating"
                   [(ngModel)]="quantity"
                   name="quantity"
-                  min="0"
+                  min="1"
+                  (input)="confirmQuantity()"
                   required>
               </ion-input>
             </ion-item>
@@ -63,7 +63,8 @@
                   label-placement="floating"
                   [(ngModel)]="price"
                   name="selling_price"
-                  [min]="selectedBatch.buying_price"
+                  [min]="selectedItem.min_price"
+                  (input)="confirmSellPrice()"
                   required>
               </ion-input>
             </ion-item>
@@ -75,10 +76,12 @@
 
       <ion-row class="ion-padding-start ion-padding-end">
         <ion-col class="ion-no-padding">
-          <ion-button expand="block"
+          <div class="text-center loader" *ngIf="showLoader"></div>
+          <ion-button *ngIf="!showLoader"
+                      expand="block"
                       type="submit"
                       color="success"
-                      [disabled]="!batchForm.valid || price<selectedBatch.buying_price"
+                      [disabled]="!batchForm.valid || price<buying_price || priceError!='' || quantityError != ''"
                       >Save</ion-button>
         </ion-col>
       </ion-row>

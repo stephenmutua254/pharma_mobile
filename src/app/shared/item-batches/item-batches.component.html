@@ -10,6 +10,7 @@
 </ion-header>
 
 <ion-content mode="md">
+
   <ion-list mode="md">
     <ion-item *ngFor="let item of selectedItem.batches; let index"
               role="article"
@@ -36,8 +37,6 @@
     </ion-item>
   </ion-list>
 
-
-
   <ion-modal #batchModal
             initialBreakpoint="0.60"
             [breakpoints]="[0, 0.60]"
@@ -45,11 +44,11 @@
     <ng-template>
       <div class="block modal-block">
         <app-batch-form [selectedBatch]="selectedBatch"
+                        [selectedItem]="selectedItem"
                         (status)="batchStatus($event)">
         </app-batch-form>
       </div>
     </ng-template>
   </ion-modal>
-
 
 </ion-content>
