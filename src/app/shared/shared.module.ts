@@ -10,6 +10,7 @@ import { IonApp, IonRouterOutlet, IonMenu, IonMenuButton,
 import { ToastComponent } from "./toast/toast.component";
 import { LoadingComponent } from "./loading/loading.component";
 import { FormsModule } from '@angular/forms';
+import { NotificationComponent } from './notification/notification.component';
 // import { ItemBatchesComponent } from './item-batches/item-batches.component';
 // import { BatchFormComponent } from './batch-form/batch-form.component';
 
@@ -25,7 +26,8 @@ import { FormsModule } from '@angular/forms';
                 IonSkeletonText, IonAccordionGroup, IonAccordion,
                 IonRefresher, IonCardContent, IonRefresherContent, IonCol,
                 IonToast, IonTitle, IonButton,
-                ToastComponent, LoadingComponent, IonGrid,
+                ToastComponent, NotificationComponent,
+                LoadingComponent, IonGrid,
                 IonRow, IonButtons],
     exports: [CommonModule, FormsModule, IonApp, IonRouterOutlet,
                 IonMenu, IonChip, IonSearchbar, IonBadge, IonCardContent,
@@ -37,7 +39,8 @@ import { FormsModule } from '@angular/forms';
                 IonIcon, IonSkeletonText, IonAccordionGroup, IonAccordion,
                 IonRefresher, IonRefresherContent, IonCol,
                 IonGrid, IonRow, IonToast, IonTitle, IonButton,
-                ToastComponent, LoadingComponent, IonButtons],
+                ToastComponent, NotificationComponent,
+                LoadingComponent, IonButtons],
     
 })
 

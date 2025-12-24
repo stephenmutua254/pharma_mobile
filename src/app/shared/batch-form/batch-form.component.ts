@@ -27,9 +27,11 @@ export class BatchFormComponent implements OnInit {
   fullpack = 0;
   piece = 0;
 
-  showNotification = false;
 
   showLoader = false;
+
+  notification = '';
+  showNotification = false;
 
   constructor(private apiSrv: ApiService,
               private authSrv: AuthService,
@@ -74,6 +76,7 @@ export class BatchFormComponent implements OnInit {
 
   unitSelected(unit: string) {
     if(unit==='Piece') {
+      this.buying_price = parseFloat(this.selectedItem.buying_price) / this.selectedItem.pack_size;
       let full_unit = this.selectedBatch.item_prices.find((x: any) => x.unit.unit_name==='Piece');
       this.price = full_unit.recom_selling_price;
       this.recom_price = full_unit.recom_selling_price;
@@ -85,6 +88,9 @@ export class BatchFormComponent implements OnInit {
       this.recom_price = full_unit.recom_selling_price;
       this.selectedItem.min_price = full_unit.min_selling_price;
     }
+
+    this.confirmQuantity();
+    this.confirmSellPrice();
   }
 
   confirmQuantity() {
@@ -92,15 +98,20 @@ export class BatchFormComponent implements OnInit {
     let full = Math.floor(this.selectedBatch.qty/this.selectedItem.pack_size);
     
     if(!isNaN(this.quantity) && this.quantity!=null) {
-      if(this.unit==='Full pack') {
+      if(this.unit==='Fullpack') {
         if(parseInt(this.quantity.toString()) > full) {
           this.quantityError = 'Only ' + full + ' fullpacks are available!';
+        } else if(parseInt(this.quantity.toString()) < 1) {
+          this.quantityError = 'Quantity should be greator than 1';
         } else {
           this.quantityError = '';
         }
+
       } else {
         if(parseInt(this.quantity.toString()) > this.selectedBatch.qty) {
           this.quantityError = 'Only ' + this.selectedBatch.qty + ' pieces are available!';
+        } else if(parseInt(this.quantity.toString()) < 1) {
+          this.quantityError = 'Quantity should be greator than 1';
         } else {
           this.quantityError = '';
         }
@@ -165,7 +176,11 @@ export class BatchFormComponent implements OnInit {
     this.apiSrv.post(request).then(async (resp) => {
       this.showLoader = false;
       if(await this.apiSrv.checkResponseStatus(resp)) {
-        this.status.emit(true);
+        this.notification = 'Item added to cart';
+        this.showNotification = true;
+        setTimeout(() => {
+          this.status.emit(true);
+        }, 1500);
       }
     }).catch(error => {
       this.showLoader = false;

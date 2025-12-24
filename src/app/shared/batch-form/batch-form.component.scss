@@ -1,0 +1,14 @@
+.input-item {
+  /* This forces the internal elements to stack vertically instead of horizontally */
+  --inner-padding-end: 0;
+  display: flex;
+  flex-direction: column; 
+  align-items: flex-start;
+}
+
+
+app-notification {
+    display: flex;
+    justify-content: center;
+    height: 50vh;
+}

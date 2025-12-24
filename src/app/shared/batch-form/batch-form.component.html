@@ -39,7 +39,7 @@
               </ion-col>
             </ion-row>
 
-            <ion-item>
+            <ion-item class="input-item">
               <ion-input
                   label="Quantity"
                   type="number"
@@ -47,12 +47,20 @@
                   label-placement="floating"
                   [(ngModel)]="quantity"
                   name="quantity"
-                  min="1"
-                  (input)="confirmQuantity()"
+                  (ionInput)="confirmQuantity()"
                   required>
               </ion-input>
             </ion-item>
+            <ion-label class="ion-padding animate-flicker"
+            *ngIf="quantityError!=''">
+              <small color="danger">
+                <ion-text color="danger">
+                  {{quantityError}}
+                </ion-text>
+              </small>
+            </ion-label>
             <br>
+            <br *ngIf="quantityError!=''">
 
             <ion-item>
               <ion-input
@@ -68,6 +76,14 @@
                   required>
               </ion-input>
             </ion-item>
+            <ion-label class="ion-padding animate-flicker"
+            *ngIf="priceError!=''">
+              <small color="danger">
+                <ion-text color="danger">
+                  {{priceError}}
+                </ion-text>
+              </small>
+            </ion-label>
             <br>
 
           </ion-list>
@@ -89,4 +105,6 @@
     </ion-grid>
   </form>
 
-  </ion-content>
+  <app-notification *ngIf="showNotification" [message]="notification" [showNotification]="showNotification"></app-notification>
+
+</ion-content>
