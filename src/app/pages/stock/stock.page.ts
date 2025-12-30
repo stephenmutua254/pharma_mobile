@@ -12,14 +12,21 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { NewItemComponent } from './new-item/new-item.component';
 import { BatchPurchasesComponent } from './batch-purchases/batch-purchases.component';
 import { SellPriceEditComponent } from './sell-price-edit/sell-price-edit.component';
+import { CategoriesComponent } from '../../shared/categories/categories.component';
+import { FormulationsComponent } from '../../shared/formulations/formulations.component';
+import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 
 @Component({
   selector: 'app-stock',
   templateUrl: './stock.page.html',
   styleUrls: ['./stock.page.scss'],
   standalone: true,
-  imports: [SharedModules, NewItemComponent,
-            BatchPurchasesComponent, SellPriceEditComponent, NewItemComponent],
+  imports: [SharedModules,
+            NewItemComponent,
+            BatchPurchasesComponent,
+            SellPriceEditComponent,
+            NewItemComponent,
+            SharedComponentsModule],
   animations: [trigger('enter', [
     transition('* => *', [
       style({ opacity: 0 }),
@@ -32,7 +39,9 @@ export class StockPage implements OnInit {
   @ViewChild('newItemModal') newItemModal: IonModal = {} as IonModal;
   @ViewChild('batchesModal') batchesModal: IonModal = {} as IonModal;
   @ViewChild('priceEditModal') priceEditModal: IonModal = {} as IonModal;
-  
+  @ViewChild('categoriesModal') categoriesModal: IonModal = {} as IonModal;
+  @ViewChild('formulationsModal') formulationsModal: IonModal = {} as IonModal;
+   
   loaded = false;
 
   allStock: any[] = [];
@@ -130,9 +139,7 @@ export class StockPage implements OnInit {
       icon: 'list',
       handler: async () => {
         this.openStockActions = false;
-        // this.openItemActions = false;
-        // this.editType = 'edit';
-        // await this.newItemModal.present();
+        await this.formulationsModal.present();
       },
       data: {
         action: 'edit'
@@ -143,9 +150,7 @@ export class StockPage implements OnInit {
       icon: 'list',
       handler: async () => {
         this.openStockActions = false;
-        // this.openItemActions = false;
-        // this.editType = 'edit';
-        // await this.newItemModal.present();
+        await this.categoriesModal.present();
       },
       data: {
         action: 'edit'
@@ -291,7 +296,7 @@ export class StockPage implements OnInit {
   }
 
   selectItem(item: any) {
-    this.selectedItem = item;
+    this.selectedItem = JSON.parse(JSON.stringify(item));
     this.openItemActions = true;
   }
 
@@ -446,6 +451,20 @@ export class StockPage implements OnInit {
       }
     }
     
+  }
+
+  async formulationStatus($event: any) {
+    await this.formulationsModal.dismiss();
+    if($event.status==true) {
+      this.selectedItem.formulation = $event.selectedItem;
+    }
+  }
+
+  async categoryStatus($event: any) {
+    await this.categoriesModal.dismiss();
+    if($event.status==true) {
+      this.selectedItem.category = $event.selectedItem;
+    }
   }
 
 }

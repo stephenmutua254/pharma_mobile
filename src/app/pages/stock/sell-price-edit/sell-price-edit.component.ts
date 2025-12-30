@@ -4,13 +4,14 @@ import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 import { SharedModules } from 'src/app/shared/shared.module';
 
 @Component({
   selector: 'app-sell-price-edit',
   templateUrl: './sell-price-edit.component.html',
   styleUrls: ['./sell-price-edit.component.scss'],
-  imports: [SharedModules]
+  imports: [SharedModules, SharedComponentsModule]
 })
 export class SellPriceEditComponent implements OnInit {
   @Input() selectedItem: any = {};

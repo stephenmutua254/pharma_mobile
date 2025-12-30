@@ -56,7 +56,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" mode="md">
   <ion-fab horizontal="end"
           vertical="bottom"
           slot="fixed"
@@ -91,7 +91,6 @@
               role="article"
               [detail]="loaderToShow!=item.id ? true : false"
               [button]="true"
-              [disabled]="loaderToShow!='' && loaderToShow!=item.id"
               (click)="loaderToShow=='' ? selectItem(item) :  ''"
               @enter>
       <ion-label>
@@ -170,6 +169,38 @@
       </div>
     </ng-template>
   </ion-modal>
+
+  <ion-modal #categoriesModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-categories">
+        <app-categories 
+          (status)="categoryStatus($event)"
+          [type]="'edit'"
+          [categories]="categories">
+        </app-categories>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #formulationsModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-categories">
+        <app-formulations 
+          (status)="formulationStatus($event)"
+          [type]="'edit'"
+          [formulations]="formulations">
+        </app-formulations>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  
 
 
   <ion-action-sheet mode="md" [isOpen]="openItemActions"

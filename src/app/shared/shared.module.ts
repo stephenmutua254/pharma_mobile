@@ -1,16 +1,26 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from "@angular/core";
-import {IonicModule} from "@ionic/angular";
-import { IonApp, IonRouterOutlet, IonMenu, IonMenuButton, IonItemOptions,
-          IonHeader, IonToolbar, IonTitle, IonItemSliding, IonMenuToggle,
-          IonContent, IonFab, IonFabButton, IonFabList, IonTextarea, IonActionSheet, IonBadge, IonThumbnail, IonList, IonText, IonInput, IonItem, IonButton,
-          IonLabel, IonDatetime, IonAlert, IonModal, IonInfiniteScroll,IonInfiniteScrollContent, IonSearchbar, IonCard, IonCardContent, IonCardTitle, IonCardHeader, IonCardSubtitle, IonIcon, IonAccordionGroup, IonAccordion,
-            IonRefresher, IonCheckbox, IonRefresherContent, IonCol, IonItemOption,
-            IonGrid, IonDatetimeButton, IonChip, IonSkeletonText, IonRow, IonToast, IonButtons} from '@ionic/angular/standalone';
-import { ToastComponent } from "./toast/toast.component";
-import { LoadingComponent } from "./loading/loading.component";
 import { FormsModule } from '@angular/forms';
-import { NotificationComponent } from './notification/notification.component';
+import { IonApp, IonRouterOutlet,
+          IonMenu, IonMenuButton, IonItemOptions,
+          IonHeader, IonToolbar, IonTitle,
+          IonItemSliding, IonMenuToggle,
+          IonContent, IonFab, IonFabButton,
+          IonFabList, IonTextarea, IonActionSheet,
+          IonBadge, IonThumbnail, IonList,
+          IonText, IonInput, IonItem, IonButton,
+          IonLabel, IonDatetime, IonAlert, IonModal,
+          IonInfiniteScroll,IonInfiniteScrollContent,
+          IonSearchbar, IonCard, IonCardContent,
+          IonCardTitle, IonCardHeader, IonCardSubtitle,
+          IonIcon, IonAccordionGroup, IonAccordion,
+          IonRefresher, IonCheckbox, IonRefresherContent,
+          IonCol, IonItemOption,
+          IonGrid, IonDatetimeButton, IonChip,
+          IonSkeletonText, IonRow, IonToast,
+          IonButtons} from '@ionic/angular/standalone';
+import { EditCategoryComponent } from './edit-category/edit-category.component';
+
 
 @NgModule({
     imports: [CommonModule, FormsModule, IonApp, IonRouterOutlet,
@@ -24,9 +34,9 @@ import { NotificationComponent } from './notification/notification.component';
                 IonSkeletonText, IonAccordionGroup, IonAccordion,
                 IonRefresher, IonAlert, IonCardContent, IonRefresherContent, IonCol,
                 IonToast, IonTitle, IonButton, IonItemOption,
-                ToastComponent, NotificationComponent,
-                LoadingComponent, IonGrid, IonActionSheet,
-                IonRow, IonButtons, IonFab, IonFabButton, IonFabList],
+                IonGrid, IonActionSheet,
+                IonRow, IonButtons, IonFab, IonFabButton,
+                IonFabList],
     exports: [CommonModule, FormsModule, IonApp, IonRouterOutlet, IonItemSliding,
                 IonMenu, IonTextarea, IonChip, IonSearchbar, IonBadge, IonCardContent,
                 IonMenuButton, IonText, IonHeader, IonToolbar,
@@ -37,8 +47,9 @@ import { NotificationComponent } from './notification/notification.component';
                 IonIcon, IonSkeletonText, IonAccordionGroup, IonAccordion,
                 IonRefresher, IonRefresherContent, IonCol, IonItemOption,
                 IonGrid, IonRow, IonToast, IonTitle, IonButton,
-                ToastComponent, NotificationComponent, IonActionSheet,
-                LoadingComponent, IonButtons, IonFab, IonFabButton, IonFabList],
+                IonActionSheet,
+                IonButtons, IonFab, IonFabButton,
+                IonFabList],
     
 })
 

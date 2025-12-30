@@ -1,0 +1,95 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content mode="md">
+  <form *ngIf="!showNotification && type==='new'"
+    autocomplete="off"
+    #newForm="ngForm"
+    (ngSubmit)="group=='category' ? addCategory(newForm) : addFormulation(newForm)">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-list>
+            <ion-item class="input-item">
+              <ion-input
+                  [label]="group=='category' ? 'Category name' : 'Formulation name'"
+                  type="text"
+                  placeholder="Enter name..."
+                  label-placement="floating"
+                  [(ngModel)]="newName"
+                  name="name"
+                  required>
+              </ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>  
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!newForm.valid ||
+                      newName.trim()==''">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <form *ngIf="!showNotification && type==='edit'"
+    autocomplete="off"
+    #newForm2="ngForm"
+    (ngSubmit)="group=='category' ? updateCategory(newForm2) : updateFormulation(newForm2)">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-list>
+            <ion-item class="input-item">
+              <ion-input
+                  [label]="group=='category' ? 'Category name' : 'Formulation name'"
+                  type="text"
+                  placeholder="Enter name..."
+                  label-placement="floating"
+                  [(ngModel)]="activeSelection.name"
+                  name="name"
+                  required>
+              </ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>  
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!newForm2.valid ||
+                      (group=='category' && selectedCategory.name.trim()==='') ||
+                      (group=='formulation' && selectedFormulation.name.trim()==='')">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <app-notification *ngIf="showNotification" [message]="message" [showNotification]="showNotification"></app-notification>
+
+</ion-content>

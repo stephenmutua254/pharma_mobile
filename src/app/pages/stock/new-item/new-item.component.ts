@@ -2,18 +2,21 @@ import { IonModal } from '@ionic/angular/standalone';
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { SharedModules } from 'src/app/shared/shared.module';
-import { CategoriesComponent } from './categories/categories.component';
-import { FormulationsComponent } from './formulations/formulations.component';
+// import { CategoriesComponent } from '../categories/categories.component';
+// import { FormulationsComponent } from '../formulations/formulations.component';
 import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { CategoriesComponent } from '../../../shared/categories/categories.component';
+import { FormulationsComponent } from '../../../shared/formulations/formulations.component';
+import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 
 @Component({
   selector: 'app-new-item',
   templateUrl: './new-item.component.html',
   styleUrls: ['./new-item.component.scss'],
-  imports: [SharedModules, CategoriesComponent, FormulationsComponent]
+  imports: [SharedModules, SharedComponentsModule]
 })
 export class NewItemComponent implements OnInit {
   @ViewChild('newForm', {static: false}) newForm: NgForm = {} as NgForm;
@@ -35,9 +38,9 @@ export class NewItemComponent implements OnInit {
   showLoader = false;
 
   constructor(private apiSrv: ApiService,
-                private authSrv: AuthService,
-                private toast: ToastService,
-                private cryptoSrv: CryptoService) { }
+              private authSrv: AuthService,
+              private toast: ToastService,
+              private cryptoSrv: CryptoService) { }
 
   ngOnInit() {
     if(this.type=='edit') {

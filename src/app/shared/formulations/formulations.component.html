@@ -1,0 +1,93 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-searchbar
+      style="padding: 10px 0px 5px 10px; min-height: 1px;"
+      mode="ios"
+      placeholder="Search formulation ..."
+      #searchbar
+      (ionInput)="filterList($event)"
+      (ionClear)="filteredFormulations = formulations.slice(0, 30)">
+    </ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button size="small"
+                  color="primary"
+                  mode="ios"
+                  fill="solid"
+                  shape="round"
+                  class="ion-padding-start"
+                  (click)="newFormulation()"
+                  style="padding-right: 5px; padding-top: 5px;">
+        <ion-icon slot="start" name="add"></ion-icon>
+        New
+      </ion-button>
+      <ion-button color="danger" (click)="close()" style="padding-top: 5px;">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-list mode="md">
+    <ion-item-sliding #slidingItem 
+                  *ngFor="let item of filteredFormulations">
+      <ion-item role="article"
+                [detail]="loaderToShow==item.id ? false: true"
+                [button]="true"
+                (click)="loaderToShow=='' ? slidingItem.open('end') : ''"
+                @enter>
+        <ion-label>
+          <ion-text class="truncate">{{ item.name | titlecase}}</ion-text>
+        </ion-label>
+      </ion-item>
+
+      <div class="loader"
+          *ngIf="loaderToShow==item.id">
+      </div>
+      <ion-item-options side="end">
+        <ion-item-option *ngIf="type!='edit'" color="success" (click)="slidingItem.close(); selectItem(item)">
+          <ion-icon slot="end" name="checkmark-outline"></ion-icon>
+          Select
+        </ion-item-option>
+        <ion-item-option color="secondary" (click)="slidingItem.close(); editItem(item)">
+          <ion-icon slot="end" name="pencil-outline"></ion-icon>
+          Edit
+        </ion-item-option>
+        <ion-item-option *ngIf="type=='edit'" color="danger" (click)="slidingItem.close(); selectedItem=item; showAlert=true;">
+          <ion-icon slot="end" name="trash-outline"></ion-icon>
+          Delete
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-infinite-scroll
+    (ionInfinite)="onIonInfinite($event)"
+    *ngIf="formulations.length>0">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <ion-modal #editCategoryModal
+            initialBreakpoint="0.60"
+            [breakpoints]="[0, 0.60]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-edit-categories">
+        <app-edit-category
+          (status)="editStatus($event)"
+          [type]="editType"
+          [group]="'formulation'"
+          [selectedFormulation]="selectedItem">
+        </app-edit-category>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-alert
+    [isOpen]="showAlert"
+    message="Are you sure?"
+    [buttons]="alertDeleteButtons">
+  </ion-alert>
+
+
+</ion-content>

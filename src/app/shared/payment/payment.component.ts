@@ -8,12 +8,13 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ApiService } from 'src/app/services/api.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { format } from 'date-fns';
+import { SharedComponentsModule } from '../shared-components.module';
 
 @Component({
   selector: 'app-payment',
   templateUrl: './payment.component.html',
   styleUrls: ['./payment.component.scss'],
-  imports: [SharedModules]
+  imports: [SharedModules, SharedComponentsModule]
 })
 export class PaymentComponent implements OnInit {
   @ViewChild('datetime1', {static: false}) paymentDate: IonDatetime = {} as IonDatetime;

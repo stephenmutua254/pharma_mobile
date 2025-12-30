@@ -7,11 +7,12 @@ import { AuthService } from './services/auth.service';
 import { LoadingService } from './services/loading.service';
 import { Observable } from 'rxjs';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { SharedComponentsModule } from './shared/shared-components.module';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
-  imports: [SharedModules],
+  imports: [SharedModules, SharedComponentsModule],
   animations: [trigger('enter', [
   transition('* => *', [
     style({ opacity: 0 }),

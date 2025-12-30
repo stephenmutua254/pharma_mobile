@@ -4,12 +4,13 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SharedModules } from '../shared.module';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { SharedComponentsModule } from '../shared-components.module';
 
 @Component({
   selector: 'app-batch-form',
   templateUrl: './batch-form.component.html',
   styleUrls: ['./batch-form.component.scss'],
-  imports: [SharedModules]
+  imports: [SharedModules, SharedComponentsModule]
 })
 export class BatchFormComponent implements OnInit {
   @Input() selectedBatch: any = {};

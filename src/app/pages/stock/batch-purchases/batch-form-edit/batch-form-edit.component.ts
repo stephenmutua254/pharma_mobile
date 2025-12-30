@@ -6,11 +6,12 @@ import { ApiService } from 'src/app/services/api.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 @Component({
   selector: 'app-batch-form-edit',
   templateUrl: './batch-form-edit.component.html',
   styleUrls: ['./batch-form-edit.component.scss'],
-  imports: [SharedModules]
+  imports: [SharedModules, SharedComponentsModule]
 })
 export class BatchFormEditComponent implements OnInit {
   @ViewChild('expiry_date', {static: false}) expiryDate: IonDatetime = {} as IonDatetime;
