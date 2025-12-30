@@ -164,11 +164,12 @@ export class CartItemsComponent implements OnInit {
         this.selectedItem.buying_price = this.selectedBatch.buying_price;
         this.cartId = item.id;
 
-        this.loaderToShow = '';
-
         await this.batchModal.present();
 
       }
+
+      this.loaderToShow = '';
+      
     }).catch(error => {
       this.toast.showErrorToast(error);
     });

@@ -116,6 +116,10 @@ ion-toolbar {
   ) !important;
 }
 
+.small-toolbar {
+  padding: 0.3px !important;
+}
+
 ion-content {
   /* A soft gradient makes the glass blur look much more expensive */
   --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);

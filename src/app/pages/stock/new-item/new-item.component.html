@@ -1,8 +1,8 @@
 <ion-header class="ion-no-border" mode="md">
-  <ion-toolbar>
+  <ion-toolbar class="small-toolbar">
     <ion-title>
       <small *ngIf="type=='edit'">
-        Edit price for {{selectedItem.name | titlecase}} ({{selectedItem.pack_size | titlecase}})
+        Edit {{selectedItem.name | titlecase}} ({{selectedItem.pack_size | titlecase}})
       </small>
       <small *ngIf="type=='new'">
         New drug
@@ -21,36 +21,41 @@
   <form *ngIf="!showNotification && type==='new'"
         autocomplete="off"
         #newForm="ngForm"
-        (ngSubmit)="addNewItem()">
+        (ngSubmit)="addNewItem()"
+        mode="md">
     <ion-grid>
       <ion-row>
         <ion-col>
           <ion-list>
 
-            <ion-item>
+            <!-- <ion-item> -->
               <ion-textarea
                 label="Brand name"
                 label-placement="floating"
                 placeholder="Enter brand name..."
                 [(ngModel)]="selectedItem.name"
                 name="name"
+                fill="outline"
+                class="ion-padding"
                 [autoGrow]="true"
                 required>
               </ion-textarea>
-            </ion-item>
-            <br>
+            <!-- </ion-item> -->
+            <!-- <br> -->
 
-            <ion-item>
+            <!-- <ion-item> -->
               <ion-textarea
                 label="API"
                 label-placement="floating"
                 placeholder="Enter api..."
                 [(ngModel)]="selectedItem.api"
                 [autoGrow]="true"
-                name="api">
+                name="api"
+                fill="outline"
+                class="ion-padding">
               </ion-textarea>
-            </ion-item>
-            <br>
+            <!-- </ion-item> -->
+            <!-- <br> -->
 
             <ion-item role="article"
                     detail="true"
@@ -69,29 +74,34 @@
             </ion-item>
             <br>
 
-            <ion-item>
+            <!-- <ion-item> -->
               <ion-input
                   label="Pack size"
                   type="text"
                   placeholder="Enter pack size..."
                   label-placement="floating"
                   [(ngModel)]="selectedItem.pack_size"
-                  name="pack_size">
+                  name="pack_size"
+                  fill="outline"
+                  style="padding: 16px !important">
               </ion-input>
-            </ion-item>
-            <br>
+            <!-- </ion-item> -->
+            <!-- <br> -->
 
-            <ion-item>
+            <!-- <ion-item> -->
               <ion-input
                   label="Strength"
                   type="text"
                   placeholder="Enter strength..."
                   label-placement="floating"
                   [(ngModel)]="selectedItem.strength"
-                  name="strength">
+                  name="strength"
+                  fill="outline"
+                  class="ion-padding"
+                  style="padding: 16px !important">
               </ion-input>
-            </ion-item>
-            <br>
+            <!-- </ion-item> -->
+            <!-- <br> -->
 
             <ion-item role="article"
                     detail="true"
@@ -142,7 +152,7 @@
             <br>
 
             <div *ngIf="selectedItem.sell_unit==='Fullpack and piece'">
-              <ion-item>
+              <!-- <ion-item> -->
                 <ion-input
                     label="Number of pieces in a fullpack"
                     type="number"
@@ -152,10 +162,12 @@
                     name="full_qty"
                     step="1"
                     min="2"
-                    required>
+                    required
+                    fill="outline"
+                    style="padding: 16px !important">
                 </ion-input>
-              </ion-item>
-              <ion-label class="ion-padding animate-flicker"
+              <!-- </ion-item> -->
+              <ion-label class="ion-padding-start animate-flicker"
                 *ngIf="selectedItem.full_qty < 2">
                 <small color="danger">
                   <ion-text color="danger">
@@ -167,7 +179,7 @@
               <br>
             </div>
 
-            <ion-item>
+            <!-- <ion-item> -->
               <ion-input
                   label="Default selling price per {{selectedItem.sell_unit==='Fullpack' || selectedItem.sell_unit==='Fullpack and piece' ? 'Fullpack' : 'Piece'}}"
                   type="number"
@@ -175,9 +187,11 @@
                   label-placement="floating"
                   [(ngModel)]="selectedItem.default_price"
                   name="default_price"
-                  required>
+                  required
+                  fill="outline"
+                  style="padding: 16px !important">
               </ion-input>
-            </ion-item>
+            <!-- </ion-item> -->
             <br>
 
           </ion-list>
