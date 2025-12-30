@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { SharedModules } from 'src/app/shared/shared.module';
 import { IonSearchbar, InfiniteScrollCustomEvent, IonModal } from '@ionic/angular/standalone';
@@ -8,14 +8,15 @@ import { AuthService } from 'src/app/services/auth.service';
 import { CryptoService } from 'src/app/services/crypto.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { ItemBatchesComponent } from '../../shared/item-batches/item-batches.component';
+import { ItemBatchesComponent } from 'src/app/shared/item-batches/item-batches.component';
+import { CartItemsComponent } from 'src/app/shared/cart-items/cart-items.component';
 
 @Component({
   selector: 'app-sell',
   templateUrl: './sell.page.html',
   styleUrls: ['./sell.page.scss'],
   standalone: true,
-  imports: [SharedModules,ItemBatchesComponent],
+  imports: [SharedModules, ItemBatchesComponent, CartItemsComponent],
   animations: [trigger('enter', [
     transition('* => *', [
       style({ opacity: 0 }),
@@ -26,6 +27,7 @@ import { ItemBatchesComponent } from '../../shared/item-batches/item-batches.com
 export class SellPage implements OnInit {
   @ViewChild('searchbar', { static: true }) searchbar: IonSearchbar = {} as IonSearchbar;
   @ViewChild('batchModal') batchModal: IonModal = {} as IonModal;
+  @ViewChild('cartModal') cartModal: IonModal = {} as IonModal;
 
   allStock: any[] = [];
   stock: any[] = [];
@@ -36,6 +38,7 @@ export class SellPage implements OnInit {
   waitingCustomers = [];
   nearExpiryItemsTotal = [];
   idle_stock_total = [];
+  totalCartAmount = 0;
 
   sellUnitType = '';
 
@@ -48,6 +51,7 @@ export class SellPage implements OnInit {
   constructor(private apiSrv: ApiService,
               private authSrv: AuthService,
               private toast: ToastService,
+              private cdr: ChangeDetectorRef,
               private cryptoSrv: CryptoService,) { }
 
   ngOnInit() {
@@ -67,7 +71,6 @@ export class SellPage implements OnInit {
   }
 
   filterList(searchQuery: string | undefined) {
-    console.log(searchQuery)
     if (!searchQuery || searchQuery.trim() === '') {
       this.filteredStock = this.stockBatches.slice(0, 30); // Display an initial chunk instead of the entire list
     } else {
@@ -82,10 +85,11 @@ export class SellPage implements OnInit {
     }
   }
 
-  ionViewWillEnter() {
+  ionViewDidLeave() {
     this.loaded = false;
     this.filteredStock = [];
     this.stockBatches = [];
+    this.cartItems = [];
   }
 
   ionViewDidEnter() {
@@ -110,13 +114,99 @@ export class SellPage implements OnInit {
 
           if(item) {
             let quantity = parseInt(item.total_quantity) - (parseInt(element.qty.toString()) * element.unit.unit_quantity);
-
             if(quantity<0) {
               item.total_quantity = '0';
             } else {
               item.total_quantity = quantity.toString();
             }
           }
+
+          this.totalCartAmount += parseFloat((element.qty * element.sp).toFixed(0));
+        });
+
+        this.allStock.forEach(element => {
+
+          let full_pack=0;
+          let piece=0;
+
+          if(this.sellUnitType==='Piece') {
+
+            piece = parseInt(element.total_quantity);
+
+            element.full_pack = full_pack;
+            element.piece = piece;
+
+          } else {
+
+            if(parseInt(element.pack_size)==1) {
+              if(element.sell_unit==='Fullpack') {
+                full_pack = parseInt(element.total_quantity);
+              } else {
+                piece = parseInt(element.total_quantity);
+              }
+            } else {
+              full_pack = Math.floor(parseInt(element.total_quantity)/parseInt(element.pack_size));
+              piece = parseInt(element.total_quantity) - (full_pack * parseInt(element.pack_size));
+            }
+
+            element.full_pack = full_pack;
+            element.piece = piece;
+
+          }
+          this.stockBatches.push(element);
+
+        });
+        this.generateProducts();
+      }
+
+    }).catch(error => {
+      this.toast.showErrorToast(error);
+    });
+
+  }
+
+  generateProducts() {
+    let length = this.filteredStock.length;
+    for (let i = length; i < length + 30; i++) {
+      if(this.stockBatches[i]!=null) {
+        this.filteredStock.push(this.stockBatches[i]);
+      }
+    }
+
+    this.loaded = true;
+  }
+
+  refreshList() {
+    const request = {
+      action: this.cryptoSrv.encryptText('get-stock-and-cart-items-new'),
+      uid: this.authSrv.getUserToken('uid')
+    }
+
+    this.apiSrv.read(request).then(async (resp) => {
+      if(await this.apiSrv.checkResponseStatus(resp)) {
+        
+        this.cartItems = resp.cartItems;
+        this.waitingCustomers = resp.waiting;
+        this.nearExpiryItemsTotal = resp.near_expiry;
+        this.sellUnitType = resp.sell_unit_type;
+        this.allStock = resp.stock;
+        this.stockBatches = [];
+
+        resp.allCartItems.forEach((element: any) => {
+          // check item in stock
+          let item = this.allStock.find(x => x.id ==  element.item.id);
+
+          if(item) {
+            let quantity = parseInt(item.total_quantity) - (parseInt(element.qty.toString()) * element.unit.unit_quantity);
+            if(quantity<0) {
+              item.total_quantity = '0';
+            } else {
+              item.total_quantity = quantity.toString();
+            }
+          }
+
+          this.totalCartAmount += parseFloat((element.qty * element.sp).toFixed(0));
+      
         });
 
         this.allStock.forEach(element => {
@@ -154,26 +244,29 @@ export class SellPage implements OnInit {
         });
 
         // this.filteredStock = [...this.stockBatches];
-        this.generateProducts();
+        this.reloadProducts();
 
       }
 
     }).catch(error => {
       this.toast.showErrorToast(error);
     });
-
   }
 
-  generateProducts() {
-    let length = this.filteredStock.length;
-    for (let i = length; i < length + 30; i++) {
-      if(this.stockBatches[i]!=null) {
-        this.filteredStock.push(this.stockBatches[i]);
+  reloadProducts() {
+    let length = 0;
+   
+    for (let i = length; i < this.stockBatches.length; i++) {
+      let item = this.filteredStock.find(x => x.id == this.stockBatches[i].id);
+      if(item) {
+        Object.assign(item, this.stockBatches[i])
       }
     }
 
-    this.loaded = true;
+    this.cdr.detectChanges();
   }
+
+  
 
   onIonInfinite(event: any) {
     this.generateProducts();
@@ -184,91 +277,110 @@ export class SellPage implements OnInit {
 
   selectItem(product: any) {
 
-    this.loaderToShow = product.id;
+    if(product.total_quantity>0) {
 
-    const request = {
-      action: this.cryptoSrv.encryptText('check-lock-status-fast'),
-      item_id: product.id,
-      location_id: product.location_id,
-      right: this.cryptoSrv.encryptText("sell_cash"),
-      uid: this.authSrv.getUserToken('uid')
-    }
+      this.loaderToShow = product.id;
 
-    this.apiSrv.read(request).then(async (resp) => {
-      if(await this.apiSrv.checkResponseStatus(resp)) {
-
-        product.batches = resp.batches;
-
-        product.batches.forEach((element: any) => {
-
-          element.full_pack = 0;
-          element.piece = 0;
-
-          let full_pack=0;
-          let piece=0;
-
-          if(this.sellUnitType==='Piece') {
-            
-            element.full_pack = full_pack;
-            element.piece = piece;
-
-            // check if item is in cart
-            let item = this.cartItems.find(x => x.batch_no === element.batch_no && x.item.id === product.id && x.sl_id==element.s_l_id);
-
-            if(item) {
-              element.qty =  parseInt(element.qty.toString()) - (parseInt(item.qty.toString()) * item.unit.unit_quantity);
-            }
-
-            piece = parseInt(element.qty);
-
-          } else {
-
-            // check if item is in cart
-            let item = this.cartItems.find(x => x.batch_no === element.batch_no && x.item.id === product.id && x.sl_id==element.s_l_id);
-
-            if(item) {
-              element.qty =  parseInt(element.qty.toString()) - (parseInt(item.qty.toString()) * item.unit.unit_quantity);
-            }
-
-            if(parseInt(product.pack_size)===1) {
-              // piece = parseInt(element.qty);
-              if(element.sell_unit==='Fullpack') {
-                full_pack = parseInt(element.qty);
-              } else {
-                piece = parseInt(element.qty);
-              }
-            } else {
-              full_pack = Math.floor(parseInt(element.qty)/parseInt(product.pack_size));
-              piece = parseInt(element.qty) - (full_pack * parseInt(product.pack_size));
-            }
-
-            
-            element.full_pack = full_pack;
-            element.piece = piece;
-          }
-        });
-
-        this.selectedItem = JSON.parse(JSON.stringify(product));
-        
-        this.loaderToShow = '';
-
-        await this.batchModal.present();
-
-        
-
+      const request = {
+        action: this.cryptoSrv.encryptText('check-lock-status-fast'),
+        item_id: product.id,
+        location_id: product.location_id,
+        right: this.cryptoSrv.encryptText("sell_cash"),
+        uid: this.authSrv.getUserToken('uid')
       }
-    }).catch(error => {
-      this.toast.showErrorToast(error);
-    });
+
+      this.apiSrv.read(request).then(async (resp) => {
+        if(await this.apiSrv.checkResponseStatus(resp)) {
+
+          product.batches = resp.batches;
+
+          product.batches.forEach((element: any) => {
+
+            element.full_pack = 0;
+            element.piece = 0;
+
+            let full_pack=0;
+            let piece=0;
+
+            if(this.sellUnitType==='Piece') {
+              
+              element.full_pack = full_pack;
+              element.piece = piece;
+
+              // check if item is in cart
+              let item = this.cartItems.find(x => x.sl_id === element.s_l_id);
+
+              if(item) {
+                element.qty =  parseInt(element.qty.toString()) - (parseInt(item.qty.toString()) * item.unit.unit_quantity);
+              }
+
+              piece = parseInt(element.qty);
+
+            } else {
+
+              // check if item is in cart
+              this.cartItems.forEach(cartItem => {
+                if(cartItem.sl_id === element.s_l_id) {
+                  element.qty =  parseInt(element.qty.toString()) - (parseInt(cartItem.qty.toString()) * parseInt(cartItem.unit.unit_quantity.toString()));
+                }
+              });
+
+
+              if(parseInt(product.pack_size)===1) {
+                // piece = parseInt(element.qty);
+                if(element.sell_unit==='Fullpack') {
+                  full_pack = parseInt(element.qty);
+                } else {
+                  piece = parseInt(element.qty);
+                }
+              } else {
+                full_pack = Math.floor(parseInt(element.qty)/parseInt(product.pack_size));
+                piece = parseInt(element.qty) - (full_pack * parseInt(product.pack_size));
+              }
+
+              element.full_pack = full_pack;
+              element.piece = piece;
+            }
+          });
+
+          product.batches = product.batches.filter((x: any) => x.qty > 0);
+
+          this.selectedItem = JSON.parse(JSON.stringify(product));
+          
+          this.loaderToShow = '';
+
+          await this.batchModal.present();
+
+          
+
+        }
+      }).catch(error => {
+        this.toast.showErrorToast(error);
+      });
+
+    } else {
+      this.toast.showWariningToast('No quantity available!');
+    }
 
   }
 
   batchStatus($event: any) {
     this.batchModal.dismiss();
+    this.refreshList();
+  }
 
-    if($event==true) {
-      this.ionViewDidEnter();
+  cartStatus($event: any) {
+    this.cartModal.dismiss();
+    this.refreshList();
+  }
+
+  async showCart() {
+    if(this.cartItems.length>0) {
+      await this.cartModal.present();
+    } else {
+      this.toast.showWariningToast('Cart is empty!');
     }
+    
   }
 
 }

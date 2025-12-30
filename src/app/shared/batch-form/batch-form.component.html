@@ -1,10 +1,14 @@
 <ion-header class="ion-no-border" mode="md">
   <ion-toolbar>
-    <ion-title>Select unit to sell</ion-title>
+    <ion-title>
+      <small>Select unit to sell</small>
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button fill="clear"
-                color="danger"
-                (click)="close()">Close</ion-button>
+      <ion-button 
+        color="danger"
+        (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -20,18 +24,22 @@
           <ion-list>
 
             <ion-row>
-              <ion-col size="6">
+              <ion-col size="6"
+                *ngIf="selectedItem.sell_unit==='Fullpack' || selectedItem.sell_unit==='Fullpack and piece'">
                 <ion-item>
                   <ion-checkbox
+                  [disabled]="showLoader || selectedItem.sell_unit==='Fullpack'"
                     (ionChange)="unit='Fullpack'; unitSelected('Fullpack')"
                     [checked]="unit==='Fullpack' ? true : false"
                     justify="start">Fullpack</ion-checkbox>
                 </ion-item>
               </ion-col>
 
-              <ion-col size="6">
+              <ion-col size="6"
+                *ngIf="selectedItem.sell_unit==='Piece' || selectedItem.sell_unit==='Fullpack and piece'">
                 <ion-item>
                   <ion-checkbox
+                    [disabled]="showLoader || selectedItem.sell_unit==='Piece'"
                     (ionChange)="unit='Piece'; unitSelected('Piece')"
                     [checked]="unit==='Piece' ? true : false"
                     justify="start">Piece</ion-checkbox>
@@ -46,6 +54,8 @@
                   placeholder="Enter quantity..."
                   label-placement="floating"
                   [(ngModel)]="quantity"
+                  [min]="1"
+                  [disabled]="showLoader"
                   name="quantity"
                   (ionInput)="confirmQuantity()"
                   required>
@@ -71,6 +81,7 @@
                   label-placement="floating"
                   [(ngModel)]="price"
                   name="selling_price"
+                  [disabled]="showLoader"
                   [min]="selectedItem.min_price"
                   (input)="confirmSellPrice()"
                   required>
@@ -91,8 +102,8 @@
       </ion-row>
 
       <ion-row class="ion-padding-start ion-padding-end">
-        <ion-col class="ion-no-padding">
-          <div class="text-center loader" *ngIf="showLoader"></div>
+        <ion-col class="ion-no-padding" [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
           <ion-button *ngIf="!showLoader"
                       expand="block"
                       type="submit"

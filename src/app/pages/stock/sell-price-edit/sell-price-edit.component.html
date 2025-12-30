@@ -1,0 +1,95 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title>
+      <small>
+        Edit price for {{selectedItem.name | titlecase}} ({{selectedItem.pack_size | titlecase}})
+      </small>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content mode="md">
+
+  <form autocomplete="off"
+      #batchForm="ngForm"
+      *ngIf="!showNotification"
+      (ngSubmit)="saveSellingPrice()">
+    <ion-grid>
+      <ion-row>
+        <ion-col [size]="selling_prices.length>1 ? 6 : 12" *ngFor="let item of selling_prices">
+          <ion-list>
+            <p>
+              <ion-label class="ion-padding">{{item.unit.unit_name}}</ion-label>
+            </p>
+            <ion-item>
+              <ion-input
+                  label="Retail price"
+                  type="number"
+                  placeholder="Enter quantity..."
+                  label-placement="floating"
+                  [(ngModel)]="item.recom_selling_price"
+                  [name]="item.unit.unit_name + 'recom'"
+                  (ionInput)="checkPrice(item)"
+                  min="0"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Wholesale price"
+                  type="number"
+                  placeholder="Enter quantity..."
+                  label-placement="floating"
+                  [(ngModel)]="item.min_selling_price"
+                  [name]="item.unit.unit_name + 'min'"
+                  min="0"
+                  max="{{item.recom_selling_price}}"
+                  (ionInput)="checkPrice(item)"
+                  required>
+              </ion-input>
+            </ion-item>
+            <ion-label class="ion-padding animate-flicker"
+              *ngIf="item.min_selling_price > item.recom_selling_price">
+              <small color="danger">
+                <ion-text color="danger">
+                  Wholesale cannot exceed retail
+                </ion-text>
+              </small>
+            </ion-label>
+            <br>
+
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!batchForm.valid">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+
+  <app-notification
+    *ngIf="showNotification"
+    message="Price updated!"
+    [showNotification]="showNotification">
+  </app-notification>
+
+</ion-content>

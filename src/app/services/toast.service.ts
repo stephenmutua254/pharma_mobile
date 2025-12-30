@@ -21,11 +21,11 @@ export class ToastService {
   }
 
   showWariningToast(message: string) {
-    this.toastState.next({message: message, icon: 'warning-outline', color: 'danger', duration: 2000});
+    this.toastState.next({message: message, icon: 'warning-outline', color: 'warning', duration: 2000});
   }
 
   showInfoToast(message: string) {
-    this.toastState.next({message: message, icon: 'information-circle-outline', color: 'primary', duration: 2000});
+    this.toastState.next({message: message, icon: 'information-circle-outline', color: 'secondary', duration: 2000});
   }
 
   clearToast() {

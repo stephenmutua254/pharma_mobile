@@ -1,0 +1,19 @@
+.modal-block-batches {
+    height: 100vh;
+
+    app-batch-purchases {
+        display: contents;
+    }
+
+    app-new-item {
+        display: contents;
+    }
+}
+
+.modal-block-price-edit {
+    height: 90vh;
+
+    app-sell-price-edit {
+        display: contents;
+    }
+}

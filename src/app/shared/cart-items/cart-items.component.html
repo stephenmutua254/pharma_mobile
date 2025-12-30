@@ -1,0 +1,107 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title color="success">
+      <small>
+        Ksh {{totalCartAmount | number : '.2'}}
+      </small>
+    </ion-title>
+    <ion-button class="ion-padding-end ion-no-margin ion-no-padding ion-padding-start"
+                shape="round"
+                slot="end"
+                color="success"
+                mode="ios"
+                size="small"
+                (click)="pay()">
+      <ion-icon slot="start" name="wallet"></ion-icon>
+      Pay
+    </ion-button>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content mode="md">
+
+  <ion-list mode="md">
+    <ion-item-sliding #slidingItem *ngFor="let item of cartItems; trackBy: trackItems">
+      <ion-item role="article"
+                detail="true"
+                (click)="slidingItem.open('end')">
+        <ion-label>
+          <ion-text class="truncate">
+            {{ item.item.name | titlecase }} {{ item.item.formulation | titlecase }} ({{item.item.pack_size}})
+          </ion-text>
+          <small style="font-size: 12px;">
+            Exp: {{item.expiry_date | date}}
+          </small>
+          <p style="margin-top: 12px;">
+            <ion-text color="secondary">
+              <small style="font-size: 12px;">
+                <span>{{ item.qty + ' ' + item.unit.unit_name }}</span>
+              </small>
+            </ion-text>
+          </p>
+        </ion-label>
+        <ion-label slot="end">
+          <ion-text *ngIf="loaderToShow!=item.id">
+            <sub>@ {{item.sp | number}}</sub>
+          </ion-text>
+          <div class="loader" *ngIf="loaderToShow==item.id"></div>
+        </ion-label>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="success" (click)="editItem(slidingItem, item)">
+          <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="slidingItem.close(); itemToDelete = item; showAlert=true;">
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-modal #batchModal
+            initialBreakpoint="0.60"
+            [breakpoints]="[0, 0.60]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block">
+        <app-batch-form [selectedBatch]="selectedBatch"
+                        [selectedItem]="selectedItem"
+                        [cartId]="cartId"
+                        (status)="batchStatus($event)"
+                        (item)="updateItem($event)">
+        </app-batch-form>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-alert
+    [isOpen]="showAlert"
+    message="Are you sure?"
+    [buttons]="alertDeleteButtons">
+  </ion-alert>
+
+
+  <ion-modal #paymentModal
+            initialBreakpoint="0.60"
+            [breakpoints]="[0, 0.60]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block2">
+        <app-payment [cartItems]="cartItems" [totalCartAmount]="totalCartAmount"
+                      (status)="paymentStatus($event)">
+        </app-payment>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

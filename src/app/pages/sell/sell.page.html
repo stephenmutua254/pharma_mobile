@@ -3,13 +3,24 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-  </ion-toolbar>
-  <ion-toolbar>
-    <ion-searchbar style="padding: 0px 5px 0px 5px; min-height: 1px;"
-    mode="ios"
-    placeholder="Search item ..."
-    #searchbar
-    (ionClear)="filterList('')"></ion-searchbar>
+
+    <ion-searchbar
+      style="padding: 0px 5px 0px 5px; min-height: 1px;"
+      mode="ios"
+      placeholder="Search item ..."
+      #searchbar
+      (ionClear)="filterList('')">
+    </ion-searchbar>
+
+    <ion-button size="small"
+                slot="end"
+                shape="round"
+                mode="md"
+                style="margin-left: 6px; margin-right: 10px;"
+                (click)="showCart()">
+      <ion-icon slot="start" name="basket-outline"></ion-icon>
+      {{cartItems.length + 100 | number}}
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
@@ -76,6 +87,19 @@
         <app-item-batches [selectedItem]="selectedItem"
                         (status)="batchStatus($event)">
         </app-item-batches>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #cartModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block">
+        <app-cart-items [cartItems]="cartItems"
+                        (status)="cartStatus($event)">
+        </app-cart-items>
       </div>
     </ng-template>
   </ion-modal>

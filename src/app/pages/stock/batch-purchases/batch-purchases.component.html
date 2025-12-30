@@ -1,0 +1,106 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title>
+      <small>
+        Batches for {{selectedItem.name | titlecase}} ({{selectedItem.pack_size | titlecase}})
+      </small>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content mode="md">
+
+  <ion-list mode="md">
+    <ion-item *ngFor="let item of selectedItem.locations_qty; let index"
+              role="article"
+              detail="true"
+              [button]="true"
+              (click)="selectBatch(item)"
+              @enter>
+      <ion-label>
+        <small>
+          <ion-row>
+            <ion-col size="6">Supplier:</ion-col>
+            <ion-col size="6"><ion-text>{{item.supplier | titlecase}}</ion-text></ion-col>
+            <ion-col size="6">Batch no:</ion-col>
+            <ion-col size="6"><ion-text>{{item.batch_no}}</ion-text></ion-col>
+            <ion-col size="6">Date purchased:</ion-col>
+            <ion-col size="6"><ion-text>{{item.date_created | date}}</ion-text></ion-col>
+            <ion-col size="6">Expiry:</ion-col>
+            <ion-col size="6">
+              <ion-text
+                [class]="item.expired>0 && item.location_quantity>0 ? 'animate-flicker' : ''"
+                [color]="item.expired==2 && item.location_quantity>0 ? 'warning' : ''">
+                {{item.expiry_date | date}}
+              </ion-text>
+            </ion-col>
+            <ion-col size="6">Buying price:</ion-col>
+            <ion-col size="6"><ion-text>{{item.buying_price | number : '.2'}}</ion-text></ion-col>
+            <ion-col size="6">
+              <ion-row *ngFor="let loc of item.batch_no_locations">
+                <ion-col size="12" class="ion-no-padding">
+                  <p>
+                    <ion-text [style]="{'color': loc.location.color}">
+                      <small style="font-size: 12px;">
+                        <span *ngIf="loc.full_pack>0">Full pack: {{loc.full_pack | number}}</span>
+                        <span *ngIf="loc.piece>0">{{loc.full_pack>0 ? ', ' : ''}}Piece: {{loc.piece | number}}</span>
+                      </small>
+                    </ion-text>
+                  </p>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+            <ion-col size="6">
+              <ion-badge
+                  *ngIf="item.expired==1 && item.location_quantity>0"
+                  color="danger"
+                  class="animate-flicker"
+                  mode="ios">Expired
+              </ion-badge>
+
+              <ion-label *ngIf="item.expired!=1 && item.location_quantity>0">
+                <ion-text color="primary">
+                  @ {{getUnitSellingPrice(item) | number}}
+                </ion-text>
+              </ion-label>
+            </ion-col>
+          </ion-row>
+        </small>
+      </ion-label>
+      <!-- <ion-label slot="end">
+        <ion-text>
+          <sub>@ {{selectedItem.recom_price | number}}</sub>
+        </ion-text>
+      </ion-label> -->
+    </ion-item>
+  </ion-list>
+
+  <ion-action-sheet position="top" mode="md" [isOpen]="openItemActions"
+                    [buttons]="itemActions"
+                    (didDismiss)="openItemActions = false">
+  </ion-action-sheet>
+
+  <ion-modal #editItemModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-batch">
+        <app-batch-form-edit
+          [selectedBatch]="selectedBatch"
+          [selectedItem]="selectedItem"
+          [type]="editType"
+          [vat_records]="vat_records"
+          [selling_prices]="selectedBatch.selling_prices"
+          (status)="editStatus($event)">
+        </app-batch-form-edit>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

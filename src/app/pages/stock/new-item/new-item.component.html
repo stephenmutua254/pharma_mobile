@@ -1,0 +1,410 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title>
+      <small *ngIf="type=='edit'">
+        Edit price for {{selectedItem.name | titlecase}} ({{selectedItem.pack_size | titlecase}})
+      </small>
+      <small *ngIf="type=='new'">
+        New drug
+      </small>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content mode="md">
+
+  <form *ngIf="!showNotification && type==='new'"
+        autocomplete="off"
+        #newForm="ngForm"
+        (ngSubmit)="addNewItem()">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-list>
+
+            <ion-item>
+              <ion-textarea
+                label="Brand name"
+                label-placement="floating"
+                placeholder="Enter brand name..."
+                [(ngModel)]="selectedItem.name"
+                name="name"
+                [autoGrow]="true"
+                required>
+              </ion-textarea>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-textarea
+                label="API"
+                label-placement="floating"
+                placeholder="Enter api..."
+                [(ngModel)]="selectedItem.api"
+                [autoGrow]="true"
+                name="api">
+              </ion-textarea>
+            </ion-item>
+            <br>
+
+            <ion-item role="article"
+                    detail="true"
+                    [button]="true"
+                    (click)="openCategories()">
+              <ion-label>
+                <ion-text class="truncate">
+                  Category
+                </ion-text>
+              </ion-label>
+              <ion-label slot="end">
+                <ion-text color="success">
+                  {{selectedItem.category.name | titlecase}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Pack size"
+                  type="text"
+                  placeholder="Enter pack size..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.pack_size"
+                  name="pack_size">
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Strength"
+                  type="text"
+                  placeholder="Enter strength..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.strength"
+                  name="strength">
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item role="article"
+                    detail="true"
+                    [button]="true"
+                    (click)="openFormulations()">
+              <ion-label>
+                <ion-text class="truncate">
+                  Formulation
+                </ion-text>
+              </ion-label>
+              <ion-label slot="end">
+                <ion-text color="success">
+                  {{selectedItem.formulation.name ? (selectedItem.formulation.name | titlecase) : (selectedItem.formulation | titlecase)}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+            <br>
+
+            <ion-item-sliding #slidingItem>
+              <ion-item role="article"
+                        [detail]="true"
+                        [button]="true"
+                        (click)="slidingItem.open('end')">
+                <ion-label>
+                  <ion-text class="truncate">
+                    Selling units
+                  </ion-text>
+                </ion-label>
+                <ion-label slot="end">
+                  <ion-text color="success">
+                    {{selectedItem.sell_unit}}
+                  </ion-text>
+                </ion-label>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="slidingItem.close(); selectedItem.sell_unit='Fullpack';">
+                  Fullpacks only
+                </ion-item-option>
+                <ion-item-option color="warning" (click)="slidingItem.close(); selectedItem.sell_unit='Piece'">
+                  Pieces only
+                </ion-item-option>
+                <ion-item-option color="tertiary" (click)="slidingItem.close(); selectedItem.sell_unit='Fullpack and piece'">
+                  Fullpack & pieces
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+            <br>
+
+            <div *ngIf="selectedItem.sell_unit==='Fullpack and piece'">
+              <ion-item>
+                <ion-input
+                    label="Number of pieces in a fullpack"
+                    type="number"
+                    placeholder="Enter pieces..."
+                    label-placement="floating"
+                    [(ngModel)]="selectedItem.full_qty"
+                    name="full_qty"
+                    step="1"
+                    min="2"
+                    required>
+                </ion-input>
+              </ion-item>
+              <ion-label class="ion-padding animate-flicker"
+                *ngIf="selectedItem.full_qty < 2">
+                <small color="danger">
+                  <ion-text color="danger">
+                    Fullpack must have more than 1 piece
+                  </ion-text>
+                </small>
+                <br>
+              </ion-label>
+              <br>
+            </div>
+
+            <ion-item>
+              <ion-input
+                  label="Default selling price per {{selectedItem.sell_unit==='Fullpack' || selectedItem.sell_unit==='Fullpack and piece' ? 'Fullpack' : 'Piece'}}"
+                  type="number"
+                  placeholder="Enter price..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.default_price"
+                  name="default_price"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!newForm.valid ||
+                      selectedItem.category.name=='' ||
+                      selectedItem.formulation=='' ||
+                      (selectedItem.sell_unit==='Fullpack and piece' && selectedItem.full_qty<2)">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+
+
+  <form *ngIf="!showNotification && type==='edit'"
+        autocomplete="off"
+        #newForm="ngForm"
+        (ngSubmit)="updateItem()">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-list>
+
+            <ion-item>
+              <ion-textarea
+                label="Brand name"
+                label-placement="floating"
+                placeholder="Enter brand name..."
+                [(ngModel)]="selectedItem.name"
+                name="name"
+                [autoGrow]="true"
+                required>
+              </ion-textarea>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-textarea
+                label="API"
+                label-placement="floating"
+                placeholder="Enter api..."
+                [(ngModel)]="selectedItem.api"
+                [autoGrow]="true"
+                name="api">
+              </ion-textarea>
+            </ion-item>
+            <br>
+
+            <ion-item role="article"
+                    detail="true"
+                    [button]="true"
+                    (click)="openCategories()">
+              <ion-label>
+                <ion-text class="truncate">
+                  Category
+                </ion-text>
+              </ion-label>
+              <ion-label slot="end">
+                <ion-text color="success">
+                  {{selectedItem.category.name | titlecase}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Pack size"
+                  type="text"
+                  placeholder="Enter pack size..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.pack_size"
+                  name="pack_size">
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Strength"
+                  type="text"
+                  placeholder="Enter strength..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.strength"
+                  name="strength">
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item role="article"
+                    detail="true"
+                    [button]="true"
+                    (click)="openFormulations()">
+              <ion-label>
+                <ion-text class="truncate">
+                  Formulation
+                </ion-text>
+              </ion-label>
+              <ion-label slot="end">
+                <ion-text color="success">
+                  {{selectedItem.formulation.name ? (selectedItem.formulation.name | titlecase) : (selectedItem.formulation | titlecase)}}
+                </ion-text>
+              </ion-label>
+            </ion-item>
+            <br>
+
+            <ion-item-sliding #slidingItem>
+              <ion-item role="article"
+                        [detail]="true"
+                        [button]="true"
+                        (click)="slidingItem.open('end')">
+                <ion-label>
+                  <ion-text class="truncate">
+                    Selling units
+                  </ion-text>
+                </ion-label>
+                <ion-label slot="end">
+                  <ion-text color="success">
+                    {{selectedItem.sell_unit}}
+                  </ion-text>
+                </ion-label>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option color="primary" (click)="slidingItem.close(); selectedItem.sell_unit='Fullpack';">
+                  Fullpacks only
+                </ion-item-option>
+                <ion-item-option color="warning" (click)="slidingItem.close(); selectedItem.sell_unit='Piece'">
+                  Pieces only
+                </ion-item-option>
+                <ion-item-option color="tertiary" (click)="slidingItem.close(); selectedItem.sell_unit='Fullpack and piece'">
+                  Fullpack & pieces
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+            <br>
+
+            <ion-item *ngIf="selectedItem.sell_unit==='Fullpack and piece'">
+              <ion-input
+                  label="Number of pieces in a fullpack"
+                  type="number"
+                  placeholder="Enter pieces..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.full_qty"
+                  name="full_qty"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Default selling price per {{selectedItem.sell_unit==='Fullpack' || selectedItem.sell_unit==='Fullpack and piece' ? 'Fullpack' : 'Piece'}}"
+                  type="number"
+                  placeholder="Enter price..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedItem.default_price"
+                  name="default_price"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!newForm.valid">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+
+  <ion-modal #categoriesModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-categories">
+        <app-categories 
+          (status)="categoryStatus($event)"
+          [type]="'select'"
+          [categories]="categories">
+        </app-categories>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #formulationsModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-categories">
+        <app-formulations 
+          (status)="formulationStatus($event)"
+          [type]="'select'"
+          [formulations]="formulations">
+        </app-formulations>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <app-notification *ngIf="showNotification" [message]="type==='new' ? 'Drug added!' : 'Drug updated!'" [showNotification]="showNotification"></app-notification>
+
+</ion-content>

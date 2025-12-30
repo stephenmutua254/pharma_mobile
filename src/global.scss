@@ -121,6 +121,10 @@ ion-content {
   --background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
+ion-button {
+  text-transform: none;
+}
+
 
 .block {
     width: 100%;
@@ -140,7 +144,17 @@ ion-content {
     app-batch-form {
         display: contents;
     }
+
+    app-cart-items {
+        display: contents;
+    }
+
+    app-payment {
+      display: contents;
+    }
 }
+
+
 
 
 .loader {

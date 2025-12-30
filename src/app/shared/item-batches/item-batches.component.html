@@ -1,9 +1,14 @@
 <ion-header class="ion-no-border" mode="md">
   <ion-toolbar>
-    <ion-title>{{selectedItem.name | titlecase}}</ion-title>
+    <ion-title>
+      <small>
+        {{selectedItem.name | titlecase}} ({{selectedItem.pack_size_1 | titlecase}})
+      </small>
+    </ion-title>
+    
     <ion-buttons slot="end">
-      <ion-button fill="clear" color="danger" (click)="close()">
-        Close
+      <ion-button color="danger" (click)="close()">
+        <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -45,6 +50,7 @@
       <div class="block modal-block">
         <app-batch-form [selectedBatch]="selectedBatch"
                         [selectedItem]="selectedItem"
+                        [cartId]="getDummyCartId()"
                         (status)="batchStatus($event)">
         </app-batch-form>
       </div>

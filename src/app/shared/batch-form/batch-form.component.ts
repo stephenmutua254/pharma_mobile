@@ -14,7 +14,10 @@ import { AuthService } from 'src/app/services/auth.service';
 export class BatchFormComponent implements OnInit {
   @Input() selectedBatch: any = {};
   @Input() selectedItem: any = {};
+  @Input() cartId = '';
   @Output() status = new EventEmitter<boolean>();
+  @Output() item = new EventEmitter<{qty: number, price: number, unit: string}>();
+  // @Output() newPrice = '';
 
   quantity: any = '';
   price = 0;
@@ -36,8 +39,7 @@ export class BatchFormComponent implements OnInit {
   constructor(private apiSrv: ApiService,
               private authSrv: AuthService,
               private toast: ToastService,
-              private cryptoSrv: CryptoService,
-  ) { }
+              private cryptoSrv: CryptoService) { }
 
   ngOnInit() {
     this.unit = '';
@@ -157,6 +159,7 @@ export class BatchFormComponent implements OnInit {
 
     const request = {
       action: this.cryptoSrv.encryptText("add-item-to-cart-new"),
+      cart_id: this.cartId,
       item_id: this.selectedItem.id,
       location_id: this.selectedItem.location_id,
       s_location_id: this.selectedBatch.s_l_id,
@@ -180,6 +183,11 @@ export class BatchFormComponent implements OnInit {
         this.showNotification = true;
         setTimeout(() => {
           this.status.emit(true);
+          this.item.emit({
+            qty: this.quantity,
+            price: this.price,
+            unit: this.unit
+          }) 
         }, 1500);
       }
     }).catch(error => {
@@ -188,5 +196,6 @@ export class BatchFormComponent implements OnInit {
     });
 
   }
+
 
 }

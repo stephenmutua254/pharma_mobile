@@ -1,13 +1,185 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border" [translucent]="true">
   <ion-toolbar>
-    <ion-title>stock</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-button class="animate-flicker ion-padding-end ion-no-margin ion-no-padding ion-padding-start"
+                *ngIf="loaded && nearExpiryItemsTotal >0"
+                shape="round"
+                slot="end"
+                color="warning"
+                mode="ios"
+                size="small"
+                (click)="showNearExpiry()">
+      <ion-icon slot="start" name="warning-outline"></ion-icon>
+      {{nearExpiryItemsTotal}}
+    </ion-button>
+    <ion-button size="small"
+                *ngIf="loaded && price_changed_items_total >0"
+                slot="end"
+                color="primary"
+                shape="round"
+                mode="ios"
+                class="animate-flicker ion-padding-end ion-no-margin ion-no-padding ion-padding-start"
+                (click)="showNearExpiry()">
+      <ion-icon slot="start" name="warning-outline"></ion-icon>
+      {{price_changed_items_total | number}}
+    </ion-button>
+    <ion-button size="small"
+                *ngIf="loaded && idle_stock_total>0"
+                slot="end"
+                color="danger"
+                shape="round"
+                mode="ios"
+                class="animate-flicker ion-padding-end ion-no-margin ion-no-padding ion-padding-start"
+                (click)="showNearExpiry()">
+      <ion-icon slot="start" name="warning-outline"></ion-icon>
+      {{idle_stock_total | number}}
+    </ion-button>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar style="padding: 0px 5px 0px 5px; min-height: 1px;"
+      mode="ios"
+      placeholder="Search item ..."
+      #searchbar
+      (ionClear)="filterList('')">
+    </ion-searchbar>
+    <!-- <ion-button size="medium"
+                slot="end"
+                color="primary"
+                mode="ios"
+                class=""
+                (click)="openStockActions=true;">
+      <ion-icon slot="icon-only" name="cog-outline"></ion-icon>
+    </ion-button> -->
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">stock</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-fab horizontal="end"
+          vertical="bottom"
+          slot="fixed"
+          mode="md">
+    <ion-fab-button color="secondary"
+        size="small"
+        (click)="openStockActions=true;">
+      <ion-icon name="cog-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-list *ngIf="!loaded">
+    <ion-item *ngFor="let item of [1,1,1,1,1,1,1,1,1,1,1,1,1,11]">
+      <ion-label>
+        <h3>
+          <ion-skeleton-text [animated]="true" style="width: 70%;"></ion-skeleton-text>
+        </h3>
+        <p>
+          <ion-skeleton-text [animated]="true" style="width: 40%;"></ion-skeleton-text>
+        </p>
+      </ion-label>
+
+      <ion-label slot="end">
+        <p>
+          <ion-skeleton-text [animated]="true" style="width: 200%;"></ion-skeleton-text>
+        </p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="filteredStock.length>0 && loaded" mode="md">
+    <ion-item *ngFor="let item of filteredStock; let index"
+              role="article"
+              [detail]="loaderToShow!=item.id ? true : false"
+              [button]="true"
+              [disabled]="loaderToShow!='' && loaderToShow!=item.id"
+              (click)="loaderToShow=='' ? selectItem(item) :  ''"
+              @enter>
+      <ion-label>
+        <ion-text class="truncate">{{ item.name | titlecase}}</ion-text>
+        <sub>{{ item.formulation.name ?  (item.formulation.name | titlecase) : (item.formulation | titlecase)}}
+             ({{item.pack_size | titlecase}})
+        </sub>
+        <p style="margin-top: 6px;">
+          <ion-text class="truncate" color="secondary">
+            <small style="font-size: 12px;">
+              <span>{{item.strength}}</span>
+            </small>
+          </ion-text>
+        </p>
+      </ion-label>
+      <ion-label slot="end">
+        <ion-badge mode="ios" [class]="item.expired > 0 ? 'animate-flicker' : ''"
+          *ngIf="loaderToShow!=item.id && item.batches>0"
+          [color]="item.expired > 0 ? 'warning' : 'primary'">
+          {{item.batches | number}}
+        </ion-badge>
+        <div class="loader ion-padding-end ion-margin-end"
+            *ngIf="loaderToShow==item.id">
+        </div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="onIonInfinite($event)"
+  *ngIf="allStock.length>0">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+
+  <ion-modal #newItemModal
+            initialBreakpoint="1"
+            [breakpoints]="[0, 1]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-batches">
+        <app-new-item  (status)="checkNewModalStatus($event)"
+                      [type]="editType"
+                      [categories]="categories"
+                      [formulations]="formulations"
+                      [selectedItem]="selectedItem"
+                      [vat_records]="vat_records">
+        </app-new-item>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #batchesModal
+            initialBreakpoint="1"
+            [breakpoints]="[0, 1]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-batches">
+        <app-batch-purchases (status)="batchesStatus($event)"
+                      [selectedItem]="selectedItem"
+                      [vat_records]="vat_records">
+        </app-batch-purchases>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal #priceEditModal
+            initialBreakpoint="0.90"
+            [breakpoints]="[0, 0.90]"
+            mode="ios">
+    <ng-template>
+      <div class="block modal-block-price-edit">
+        <app-sell-price-edit
+          [selectedItem]="selectedItem"
+          (status)="priceStatus($event)">
+        </app-sell-price-edit>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+
+  <ion-action-sheet mode="md" [isOpen]="openItemActions"
+                    [buttons]="itemActions"
+                    (didDismiss)="openItemActions = false">
+  </ion-action-sheet>
+
+  <ion-action-sheet mode="md" [isOpen]="openStockActions"
+                    [buttons]="stockActions"
+                    (didDismiss)="openStockActions = false">
+  </ion-action-sheet>
+
 </ion-content>

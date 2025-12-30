@@ -1,0 +1,15 @@
+.modal-block-categories {
+    height: 90vh;
+
+    app-categories {
+        display: contents;
+    }
+
+    app-formulations {
+        display: contents;
+    }
+}
+
+ion-item-option {
+    text-transform: none;
+}

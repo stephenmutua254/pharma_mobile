@@ -1,4 +1,4 @@
-import { NavController } from '@ionic/angular/standalone';
+import { NavController, ModalController } from '@ionic/angular/standalone';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -6,14 +6,17 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private navCtrl: NavController, private router: Router) {}
+  constructor(private navCtrl: NavController,
+              private modalCtrl: ModalController,
+              private router: Router) {}
   
-  logOut() {
-    this.router.navigateByUrl('/login');
-    // this.navCtrl.navigateRoot('/login', {
-    //   animated: true,
-    //   animationDirection: 'back' // You still get the "going back" animation
-    // });
+  async logOut() {
+    const modal = await this.closeModalIfOpen();
+    if(modal) {
+      localStorage.clear();
+      this.router.navigateByUrl('/login');
+    }
+    
   }
 
   setUserIsLogged(userInfo: any) {
@@ -43,6 +46,39 @@ export class AuthService {
     } else {
       return '';
     }
+  }
+
+
+
+
+  private async closeModalIfOpen(): Promise<boolean> {
+    // Check for programmatically created modals
+    let i = 4;
+    while(i>0) {
+      const programmaticModal = await this.modalCtrl.getTop();
+      if (programmaticModal) {
+        await programmaticModal.dismiss();
+        i--;
+      } else {
+        i=0;
+      }
+    }
+
+    // Check for inline modals
+    let j=4;
+    while(j>0) {
+      const inlineModals = Array.from(document.querySelectorAll('ion-modal[is-open="true"]'));
+      if (inlineModals.length > 0) {
+        const topmostInlineModal = inlineModals[inlineModals.length - 1];
+        (topmostInlineModal as any).dismiss();
+        j--;
+      } else {
+        j=0;
+      }
+    }
+    
+    return true;
+    
   }
   
 }

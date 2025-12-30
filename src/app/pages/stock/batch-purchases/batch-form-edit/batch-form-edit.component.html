@@ -1,0 +1,176 @@
+<ion-header class="ion-no-border" mode="md">
+  <ion-toolbar>
+    <ion-title>
+      <small>
+        Edit batch {{selectedBatch.batch_no}}
+      </small>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear"
+                color="danger"
+                (click)="close()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+<ion-content mode="md">
+  
+  <form autocomplete="off"
+      #batchForm="ngForm"
+      *ngIf="!showNotification && type==='edit'"
+      (ngSubmit)="saveItemBatch()">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-list>
+
+            <ion-row>
+              <ion-col size="12">
+                <sub class="ion-padding">Buying VAT</sub>
+              </ion-col>
+              <ion-col size="6" *ngFor="let item of vat_records">
+                <ion-item>
+                  <small>
+                    <ion-checkbox
+                      (ionChange)="selectedBatch.vat=item"
+                      [checked]="selectedBatch.vat.vat_percent===item.vat_percent ? true : false"
+                      justify="start">
+                      {{item.vat_percent}}
+                    </ion-checkbox>
+                  </small>
+                  </ion-item>
+              </ion-col>
+            </ion-row>
+
+            <ion-item>
+              <ion-input
+                  label="Buying price per {{selectedItem.sell_unit=='Fullpack' ? 'Fullpack' : selectedItem.sell_unit=='Piece' ? 'Piece' : 'Fullpack' }}"
+                  type="number"
+                  placeholder="Enter price..."
+                  label-placement="floating"
+                  [(ngModel)]="selectedBatch.buying_price"
+                  name="buying_price"
+                  min="0"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item [button]="true"
+                      [detail]="false">
+              <ion-label>Expiry date</ion-label>
+              <ion-datetime-button datetime="expiry_date"></ion-datetime-button>
+              <!-- <div slot="end">{{ invoiceDate.value }}</div> -->
+            </ion-item>
+            <br>
+
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!batchForm.valid">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+
+
+
+  <form autocomplete="off"
+      #batchForm="ngForm"
+      *ngIf="!showNotification && type==='price'"
+      (ngSubmit)="saveSellingPrice()">
+    <ion-grid>
+      <ion-row>
+        <ion-col [size]="selling_prices.length>1 ? 6 : 12" *ngFor="let item of selling_prices">
+          <ion-list>
+            <p>
+              <ion-label class="ion-padding">{{item.unit.unit_name}}</ion-label>
+            </p>
+            <ion-item>
+              <ion-input
+                  label="Retail price"
+                  type="number"
+                  placeholder="Enter quantity..."
+                  label-placement="floating"
+                  [(ngModel)]="item.recom_selling_price"
+                  [name]="item.unit.unit_name + 'recom'"
+                  min="0"
+                  required>
+              </ion-input>
+            </ion-item>
+            <br>
+
+            <ion-item>
+              <ion-input
+                  label="Wholesale price"
+                  type="number"
+                  placeholder="Enter quantity..."
+                  label-placement="floating"
+                  [(ngModel)]="item.min_selling_price"
+                  [name]="item.unit.unit_name + 'min'"
+                  min="0"
+                  max="{{item.recom_selling_price}}"
+                  (ionInput)="checkPrice(item)"
+                  required>
+              </ion-input>
+            </ion-item>
+            <ion-label class="ion-padding animate-flicker"
+              *ngIf="item.min_selling_price > item.recom_selling_price">
+              <small color="danger">
+                <ion-text color="danger">
+                  Wholesale cannot exceed retail
+                </ion-text>
+              </small>
+            </ion-label>
+            <br>
+
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="ion-padding-bottom">
+        <ion-col [style]="showLoader ? 'display: flex; justify-content: center;' : ''">
+          <div class="loader ion-padding-top" *ngIf="showLoader"></div>
+          <ion-button
+            expand="block"
+            type="submit"
+            color="success"
+            *ngIf="!showLoader"
+            [disabled]="!batchForm.valid">
+            Save
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+
+  <ion-modal *ngIf="type==='edit'" [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="expiry_date"
+                    presentation="date"
+                    [value]="expiryDate.value"
+                    #expiry_date>
+        <ion-buttons slot="buttons">
+          <ion-button slot="start" color="danger" (click)="expiry_date.cancel(true);">Cancel</ion-button>
+          <ion-button slot="end" color="primary" (click)="expiry_date.confirm(true);">Done</ion-button>
+        </ion-buttons>
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+
+  <app-notification *ngIf="showNotification" message="Batch updated" [showNotification]="showNotification"></app-notification>
+
+</ion-content>

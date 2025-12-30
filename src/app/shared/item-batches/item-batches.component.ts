@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { SharedModules } from '../shared.module';
 import { BatchFormComponent } from '../../shared/batch-form/batch-form.component';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { CryptoService } from 'src/app/services/crypto.service';
 
 @Component({
   selector: 'app-item-batches',
@@ -25,7 +26,7 @@ export class ItemBatchesComponent implements OnInit {
 
   selectedBatch: any = {};
   
-  constructor() { }
+  constructor(private cryptoSrv: CryptoService) { }
 
   ngOnInit() {
   }
@@ -39,6 +40,10 @@ export class ItemBatchesComponent implements OnInit {
     this.selectedBatch.min_price = this.selectedItem.min_price;
     this.selectedBatch.sell_price = this.selectedItem.recom_price;
     await this.batchModal.present();
+  }
+
+  getDummyCartId() {
+    return this.cryptoSrv.encryptText('');
   }
 
   async batchStatus($event: any) {
