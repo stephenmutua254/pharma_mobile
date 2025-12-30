@@ -13,7 +13,7 @@ export class ToastService {
   }
 
   showSuccessToast(message: string) {
-    this.toastState.next({message: message, icon: 'checkmark', color: 'success', duration: 1500});
+    this.toastState.next({message: message, icon: 'checkmark-outline', color: 'success', duration: 1500});
   }
 
   showErrorToast(message: string) {

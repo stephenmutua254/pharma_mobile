@@ -101,6 +101,8 @@ export class NewItemComponent implements OnInit {
     this.apiSrv.post(request).then(async res => {
 
       if(await this.apiSrv.checkResponseStatus(res)) {
+        this.selectedItem.id = res.id;
+        this.selectedItem.slid = res.slid;
         this.showNotification = true;
         setTimeout(() => {
           this.status.emit({status: true, item: this.selectedItem});

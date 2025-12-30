@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { IonSearchbar, IonModal } from '@ionic/angular/standalone';
 import { SharedModules } from 'src/app/shared/shared.module';
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { debounceTime, fromEvent, map } from 'rxjs';
 import { InfiniteScrollCustomEvent } from '@ionic/core';
 import { ApiService } from 'src/app/services/api.service';
@@ -12,8 +12,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { NewItemComponent } from './new-item/new-item.component';
 import { BatchPurchasesComponent } from './batch-purchases/batch-purchases.component';
 import { SellPriceEditComponent } from './sell-price-edit/sell-price-edit.component';
-import { CategoriesComponent } from '../../shared/categories/categories.component';
-import { FormulationsComponent } from '../../shared/formulations/formulations.component';
 import { SharedComponentsModule } from 'src/app/shared/shared-components.module';
 
 @Component({
@@ -158,10 +156,32 @@ export class StockPage implements OnInit {
     }
   ];
 
+
+  alertDeleteButtons = [
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      cssClass: 'alert-reject',
+      handler: () => {
+        this.showAlert = false;
+      }
+    },
+    {
+      text: 'Yes',
+      role: 'confirm',
+      cssClass: 'alert-accept',
+      handler: () => {
+        this.showAlert = false;
+        this.deleteItem();
+      },
+    },
+  ];
+
   constructor(private apiSrv: ApiService,
               private authSrv: AuthService,
               private toast: ToastService,
               private cdr: ChangeDetectorRef,
+              private ngZone: NgZone,
               private cryptoSrv: CryptoService,) { }
 
   ngOnInit() {
@@ -427,7 +447,6 @@ export class StockPage implements OnInit {
 
   }
 
-
   async batchesStatus($event: any) {
     await this.batchesModal.dismiss();
     this.ionViewDidEnter();
@@ -465,6 +484,35 @@ export class StockPage implements OnInit {
     if($event.status==true) {
       this.selectedItem.category = $event.selectedItem;
     }
+  }
+
+  deleteItem() {
+    
+    this.loaderToShow = this.selectedItem.id;
+
+    const request = {
+      action: this.cryptoSrv.encryptText('delete_stock_item'),
+      item_id: this.selectedItem.id,
+      name: this.cryptoSrv.encryptText(this.selectedItem.name),
+      added_by: this.authSrv.getUserToken('uid')
+    };
+    
+    this.apiSrv.post(request).then(async res => {
+
+      if(await this.apiSrv.checkResponseStatus(res)) {
+        this.ngZone.run(() => {
+          this.loaderToShow = '';
+          this.allStock = this.allStock.filter(x => x.id !== this.selectedItem.id);
+          this.filteredStock = this.filteredStock.filter(x => x.id !== this.selectedItem.id);
+          this.toast.showSuccessToast('Item deleted!');
+        });
+        
+      }
+
+    }).catch(error => {
+      this.toast.showErrorToast(error);
+    });
+
   }
 
 }
